@@ -1,0 +1,227 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Konarak HR System</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <style>
+    body{font-family:Arial;margin:20px;max-width:900px}
+    input,select,button{padding:10px;margin:8px 0;width:100%;box-sizing:border-box}
+    table{width:100%;border-collapse:collapse;margin-top:15px}
+    th,td{border:1px solid #ccc;padding:8px;text-align:left}
+    h1,h2{color:#333}
+    button{background:#0a7cff;color:#fff;border:none;cursor:pointer;border-radius:4px}
+    button:hover{background:#005fcc}
+    .section{margin-bottom:40px;padding-bottom:20px;border-bottom:2px solid #eee}
+  </style>
+</head>
+<body>
+
+<h1>Konarak HR System</h1>
+<p>Fully Free HR System — Employees, Leaves, Documents, Payslips</p>
+
+<script>
+  // ✅ YOUR API URL + SECRET KEY
+  const API_URL = "https://script.google.com/macros/s/AKfycbxaco_JdbFYgkIueNMVhVIwvCUSa_ZE-QQAT3UtV2B9r-fww7agGTkNsqwSk5301sMWEg/exec";
+  const API_KEY = "konarak123456789secret";
+</script>
+
+<!-- ================= EMPLOYEE SECTION ================= -->
+<div class="section">
+<h2>Add Employee</h2>
+
+<input id="emp_code" placeholder="Employee Code (ex: KFB001)">
+<input id="first_name" placeholder="First Name">
+<input id="last_name" placeholder="Last Name">
+<input id="email" placeholder="Email">
+<input id="phone" placeholder="Phone">
+<button onclick="createEmployee()">Create Employee</button>
+</div>
+
+<div class="section">
+<h2>Employees List</h2>
+<button onclick="listEmployees()">Refresh List</button>
+
+<table id="empTable">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Code</th>
+      <th>Name</th>
+      <th>Email</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+</div>
+
+
+<!-- ================= LEAVE SECTION ================= -->
+<div class="section">
+<h2>Apply Leave</h2>
+
+<input id="leave_emp_id" placeholder="Employee ID">
+<input id="leave_type" placeholder="Leave Type (Sick, Casual, Earned)">
+<input id="leave_start" type="date" placeholder="Start Date">
+<input id="leave_end" type="date" placeholder="End Date">
+<input id="leave_days" placeholder="Total Days">
+
+<button onclick="applyLeave()">Apply Leave</button>
+</div>
+
+
+<!-- ================= DOCUMENT UPLOAD ================= -->
+<div class="section">
+<h2>Upload Document</h2>
+
+<input type="file" id="docfile">
+<input id="doc_emp_id" placeholder="Employee ID">
+<select id="doc_type">
+  <option value="OFFER">Offer Letter</option>
+  <option value="RELIEVING">Relieving Letter</option>
+  <option value="ID_PROOF">ID Proof</option>
+  <option value="INVOICE">Invoice</option>
+</select>
+
+<button onclick="uploadDocument()">Upload</button>
+</div>
+
+
+<!-- ================= PAYSLIP ================= -->
+<div class="section">
+<h2>Generate Payslip PDF</h2>
+
+<input id="p_emp_id" placeholder="Employee ID">
+<input id="p_month" placeholder="Month (2025-12)">
+<input id="p_basic" placeholder="Basic Salary">
+<input id="p_hra" placeholder="HRA">
+<input id="p_allow" placeholder="Allowances">
+<input id="p_ded" placeholder="Deductions">
+<input id="p_net" placeholder="Net Pay">
+
+<button onclick="generatePayslip()">Generate Payslip</button>
+</div>
+
+
+<script>
+/************** API HELPERS ****************/
+async function apiGet(params){
+  const url = new URL(API_URL);
+  Object.keys(params).forEach(k => url.searchParams.append(k, params[k]));
+  url.searchParams.append("key", API_KEY);
+  const res = await fetch(url);
+  return res.json();
+}
+
+async function apiPost(body){
+  body.key = API_KEY;
+  const res = await fetch(API_URL, {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify(body)
+  });
+  return res.json();
+}
+
+
+/************** EMPLOYEES ****************/
+async function createEmployee(){
+  const payload = {
+    action:"create_employee",
+    emp_code: emp_code.value,
+    first_name: first_name.value,
+    last_name: last_name.value,
+    email: email.value,
+    phone: phone.value,
+    status: "active"
+  };
+
+  const r = await apiPost(payload);
+  alert("Employee Added! ID = " + r.id);
+  listEmployees();
+}
+
+async function listEmployees(){
+  const r = await apiGet({action:"list_employees"});
+  const tbody = document.querySelector("#empTable tbody");
+  tbody.innerHTML = "";
+
+  r.data.forEach(emp=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${emp.id}</td>
+      <td>${emp.emp_code}</td>
+      <td>${emp.first_name} ${emp.last_name}</td>
+      <td>${emp.email}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+
+/************** LEAVE ****************/
+async function applyLeave(){
+  const payload = {
+    action: "apply_leave",
+    employee_id: leave_emp_id.value,
+    leave_type: leave_type.value,
+    start_date: leave_start.value,
+    end_date: leave_end.value,
+    days: leave_days.value
+  };
+
+  const r = await apiPost(payload);
+  alert("Leave Applied! ID = " + r.id);
+}
+
+
+/************** DOCUMENT UPLOAD ****************/
+async function uploadDocument(){
+  const fileInput = document.getElementById("docfile");
+  if (!fileInput.files.length){ alert("Select a file first"); return; }
+
+  const file = fileInput.files[0];
+  const reader = new FileReader();
+
+  reader.onload = async function(e){
+    const base64 = e.target.result.split(",")[1];
+
+    const payload = {
+      action: "upload_document",
+      employee_id: doc_emp_id.value,
+      doc_type: doc_type.value,
+      filename: file.name,
+      mime: file.type,
+      file_base64: base64,
+      uploaded_by: "HR_Admin"
+    };
+
+    const r = await apiPost(payload);
+    alert("Document Uploaded!\nLink: " + r.file_url);
+  };
+
+  reader.readAsDataURL(file);
+}
+
+
+/************** PAYSLIP ****************/
+async function generatePayslip(){
+  const payload = {
+    action:"generate_payslip",
+    employee_id: p_emp_id.value,
+    month: p_month.value,
+    basic: p_basic.value,
+    hra: p_hra.value,
+    allowances: p_allow.value,
+    deductions: p_ded.value,
+    net_pay: p_net.value
+  };
+
+  const r = await apiPost(payload);
+  if (r.payslip_url) window.open(r.payslip_url, "_blank");
+  else alert("Error: " + r.error);
+}
+</script>
+
+</body>
+</html>
