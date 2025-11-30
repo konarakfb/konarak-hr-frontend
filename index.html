@@ -1,59 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html>
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Konarak HR System</title>
 
 <style>
-body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f5f5f5; }
-header { background: #0066ff; padding: 15px; color: #fff; font-size: 22px; text-align: center; }
-
-#container { display: flex; min-height: 100vh; }
-
-#menu {
-    width: 230px; background: #ffffff; padding: 20px;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-}
-
-#menu button {
-    width: 100%; padding: 12px; margin-bottom: 12px;
-    border: 1px solid #ccc; border-radius: 6px;
-    background: #f0f0f0; cursor: pointer; font-size: 15px;
-}
-
-#content { flex: 1; padding: 20px; }
-
-.card {
-    background: #fff; padding: 20px; margin-bottom: 20px;
-    border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-
-input, select {
-    width: 100%; padding: 10px; margin-top: 10px;
-    border: 1px solid #ccc; border-radius: 6px; font-size: 15px;
-}
-
-button.primary {
-    background: #0066ff; color: #fff; border: none;
-    padding: 12px 16px; border-radius: 6px; margin-top: 15px;
-    cursor: pointer; font-size: 16px;
-}
-
-table {
-    width: 100%; border-collapse: collapse; margin-top: 15px;
-}
-
-th, td {
-    border: 1px solid #ddd; padding: 10px;
-}
-
-th { background: #e9e9e9; }
-
-@media (max-width: 768px) {
-    #container { flex-direction: column; }
-    #menu { width: 100%; box-shadow: none; border-bottom: 1px solid #ddd; }
+body { font-family: Arial; margin: 0; background:#f4f4f4; }
+header { background:#0066ff; padding:15px; color:#fff; font-size:20px; text-align:center; }
+#container { display:flex; min-height:100vh; }
+#menu { width:230px; background:#fff; padding:20px; box-shadow:2px 0 6px rgba(0,0,0,0.1); }
+#menu button { width:100%; padding:12px; margin-bottom:12px; border:1px solid #ccc; border-radius:6px; background:#eee; cursor:pointer; }
+#content { flex:1; padding:20px; }
+.card { background:#fff; padding:20px; border-radius:8px; margin-bottom:20px; box-shadow:0 2px 6px rgba(0,0,0,0.1); }
+input, select { width:100%; padding:10px; margin-top:10px; border:1px solid #ccc; border-radius:6px; }
+button.primary { background:#0066ff; color:#fff; border:none; padding:12px; margin-top:15px; width:100%; border-radius:6px; cursor:pointer; }
+table { width:100%; border-collapse:collapse; margin-top:15px; }
+th, td { border:1px solid #ddd; padding:10px; }
+th { background:#eee; }
+@media(max-width:768px){
+  #container{ flex-direction:column; }
+  #menu{ width:100%; box-shadow:none; border-bottom:1px solid #ddd; }
 }
 </style>
 </head>
@@ -63,169 +30,146 @@ th { background: #e9e9e9; }
 <header>Konarak F&B — HR System</header>
 
 <div id="container">
+
 <div id="menu">
-    <button onclick="showPage('dashboard')">Dashboard</button>
-    <button onclick="showPage('employees')">Employees</button>
+  <button onclick="showPage('dashboard')">Dashboard</button>
+  <button onclick="showPage('employees')">Employees</button>
 </div>
 
 <div id="content">
 
-    <!-- Dashboard -->
-    <div id="dashboard" class="page">
-        <div class="card">
-            <h2>Dashboard</h2>
-            <p>Total Employees: <b id="dash_total">0</b></p>
-        </div>
-    </div>
+<div id="dashboard" class="page">
+  <div class="card">
+    <h2>Dashboard</h2>
+    <p>Total Employees: <b id="dash_total">0</b></p>
+  </div>
+</div>
 
-    <!-- Employees -->
-    <div id="employees" class="page" style="display:none">
-        <div class="card">
-            <h2>Add Employee</h2>
+<div id="employees" class="page" style="display:none">
+  <div class="card">
+    <h2>Add Employee</h2>
 
-            <input id="emp_emp_code" placeholder="Employee Code (KFB001)" />
-            <input id="emp_first_name" placeholder="First Name" />
-            <input id="emp_last_name" placeholder="Last Name" />
-            <input id="emp_email" placeholder="Email" />
-            <input id="emp_phone" placeholder="Phone" />
-            <input id="emp_dob" type="date" placeholder="DOB" />
-            <input id="emp_joining_date" type="date" placeholder="Joining Date" />
-            <input id="emp_relieving_date" type="date" placeholder="Relieving Date" />
+    <input id="emp_emp_code" placeholder="Employee Code">
+    <input id="emp_first_name" placeholder="First Name">
+    <input id="emp_last_name" placeholder="Last Name">
+    <input id="emp_email" placeholder="Email">
+    <input id="emp_phone" placeholder="Phone">
+    <input id="emp_dob" type="date">
+    <input id="emp_joining_date" type="date">
+    <input id="emp_relieving_date" type="date">
 
-            <select id="emp_department">
-                <option value="">Select Department</option>
-                <option>HR</option>
-                <option>Kitchen</option>
-                <option>Billing</option>
-                <option>Service</option>
-                <option>Store</option>
-            </select>
+    <select id="emp_department">
+      <option value="">Select Department</option>
+      <option>HR</option>
+      <option>Kitchen</option>
+      <option>Billing</option>
+      <option>Service</option>
+      <option>Store</option>
+    </select>
 
-            <input id="emp_role" placeholder="Role" />
+    <input id="emp_role" placeholder="Role">
 
-            <select id="emp_status">
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-            </select>
+    <select id="emp_status">
+      <option value="active">Active</option>
+      <option value="inactive">Inactive</option>
+    </select>
 
-            <button class="primary" onclick="saveEmployee()">Save Employee</button>
-        </div>
+    <button class="primary" onclick="saveEmployee()">Save Employee</button>
+  </div>
 
-        <div class="card">
-            <h2>Employee List</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Code</th>
-                        <th>Name</th>
-                        <th>Phone</th>
-                        <th>Department</th>
-                    </tr>
-                </thead>
-                <tbody id="emp_table"></tbody>
-            </table>
-        </div>
-    </div>
+  <div class="card">
+    <h2>Employees</h2>
+    <table>
+      <thead>
+        <tr><th>ID</th><th>Code</th><th>Name</th><th>Phone</th><th>Dept</th></tr>
+      </thead>
+      <tbody id="emp_table"></tbody>
+    </table>
+  </div>
+</div>
+
 </div>
 </div>
 
 <script>
 /* ---------------- CONFIG ---------------- */
-const API_URL = "https://script.google.com/macros/s/AKfycbyZ4Nb3uQH2VP0bi81ei8Q5QyYQtqvK6DFUPIRKhRFcq7plkzkwcMLrGFxZjJh5QylC/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwi_M1k9dLbD-e7s8fOntoHm7paC9_VD0cvPQqu1_dgtxq2HWzm6vv6p-pyTp0v_IvJ/exec";
 const API_KEY = "konarak123456789secret";
 
 /* ---------------- PAGE SWITCH ---------------- */
-function showPage(p) {
-    document.querySelectorAll(".page").forEach(x => x.style.display = "none");
-    document.getElementById(p).style.display = "block";
-
-    if (p === "employees") loadEmployees();
-    if (p === "dashboard") loadDashboard();
+function showPage(p){
+  document.querySelectorAll(".page").forEach(x=>x.style.display="none");
+  document.getElementById(p).style.display="block";
+  if(p==="employees") loadEmployees();
+  if(p==="dashboard") loadDashboard();
 }
 
 /* ---------------- SAVE EMPLOYEE ---------------- */
-async function saveEmployee() {
-    const payload = {
-        action: "create_employee",
-        key: API_KEY,
+async function saveEmployee(){
+  const body={
+    action:"create_employee",
+    key:API_KEY,
+    emp_code:emp_emp_code.value,
+    first_name:emp_first_name.value,
+    last_name:emp_last_name.value,
+    email:emp_email.value,
+    phone:emp_phone.value,
+    dob:emp_dob.value,
+    joining_date:emp_joining_date.value,
+    relieving_date:emp_relieving_date.value,
+    department:emp_department.value,
+    role:emp_role.value,
+    status:emp_status.value
+  };
 
-        emp_code: document.getElementById("emp_emp_code").value,
-        first_name: document.getElementById("emp_first_name").value,
-        last_name: document.getElementById("emp_last_name").value,
-        email: document.getElementById("emp_email").value,
-        phone: document.getElementById("emp_phone").value,
-        dob: document.getElementById("emp_dob").value,
-        joining_date: document.getElementById("emp_joining_date").value,
-        relieving_date: document.getElementById("emp_relieving_date").value,
-        department: document.getElementById("emp_department").value,
-        role: document.getElementById("emp_role").value,
-        status: document.getElementById("emp_status").value
-    };
+  try{
+    const r = await fetch(API_URL,{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify(body)
+    });
+    const d = await r.json();
 
-    try {
-        const res = await fetch(API_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-        });
-
-        const data = await res.json();
-        console.log("SAVE:", data);
-
-        if (data.success) {
-            alert("Employee added!");
-            loadEmployees();
-        } else {
-            alert("Error: " + data.error);
-        }
-
-    } catch (err) {
-        alert("Fetch Error: " + err);
-        console.log(err);
+    if(d.success){
+      alert("Employee Added!");
+      loadEmployees();
+    }else{
+      alert("Error: "+d.error);
     }
+  }catch(e){
+    alert("Fetch error: "+e);
+  }
 }
 
-/* ---------------- LOAD EMPLOYEES ---------------- */
-async function loadEmployees() {
-    try {
-        const res = await fetch(
-            `${API_URL}?action=list_employees&key=${API_KEY}`
-        );
+/* ---------------- LIST EMPLOYEES ---------------- */
+async function loadEmployees(){
+  const r = await fetch(`${API_URL}?action=list_employees&key=${API_KEY}`);
+  const d = await r.json();
 
-        const data = await res.json();
-        console.log("LIST:", data);
+  const tbody = document.getElementById("emp_table");
+  tbody.innerHTML="";
 
-        const tbody = document.getElementById("emp_table");
-        tbody.innerHTML = "";
-
-        if (data.success) {
-            data.data.forEach(emp => {
-                tbody.innerHTML += `
-                    <tr>
-                      <td>${emp.id}</td>
-                      <td>${emp.emp_code}</td>
-                      <td>${emp.first_name} ${emp.last_name}</td>
-                      <td>${emp.phone}</td>
-                      <td>${emp.department}</td>
-                    </tr>`;
-            });
-        }
-    } catch (err) {
-        console.log("Load error:", err);
-    }
+  if(d.success){
+    d.data.forEach(emp=>{
+      tbody.innerHTML += `
+      <tr>
+        <td>${emp.id}</td>
+        <td>${emp.emp_code}</td>
+        <td>${emp.first_name} ${emp.last_name}</td>
+        <td>${emp.phone}</td>
+        <td>${emp.department}</td>
+      </tr>`;
+    });
+  }
 }
 
 /* ---------------- DASHBOARD ---------------- */
-async function loadDashboard() {
-    const res = await fetch(
-        `${API_URL}?action=list_employees&key=${API_KEY}`
-    );
-    const data = await res.json();
-
-    if (data.success) {
-        document.getElementById("dash_total").innerHTML = data.data.length;
-    }
+async function loadDashboard(){
+  const r = await fetch(`${API_URL}?action=list_employees&key=${API_KEY}`);
+  const d = await r.json();
+  if(d.success){
+    dash_total.innerText = d.data.length;
+  }
 }
 </script>
 
