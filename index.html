@@ -6,101 +6,104 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 15px;
-        background: #f5f7fa;
-    }
-
-    h1 {
-        text-align: center;
-        padding: 10px;
-        color: #004aad;
-    }
-
-    h2 {
-        margin-top: 30px;
-        color: #222;
-    }
+    body { font-family: Arial; margin: 0; padding: 15px; background: #f5f7fa; }
+    h1 { text-align: center; color:#004aad; margin-top:10px; }
+    h2 { color:#333; margin-top:25px; }
 
     .card {
-        background: #fff;
-        padding: 15px;
-        margin-top: 15px;
-        border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        background:#fff; padding:15px; margin-top:15px;
+        border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,0.1);
     }
 
     input, select, button {
-        width: 100%;
-        padding: 12px;
-        margin-top: 8px;
-        border-radius: 6px;
-        border: 1px solid #ccc;
-        box-sizing: border-box;
-        font-size: 16px;
+        width:100%; padding:12px; margin-top:8px;
+        border-radius:6px; border:1px solid #ccc; font-size:16px;
     }
 
     button {
-        background: #007bff;
-        color: white;
-        border: none;
-        margin-top: 12px;
-        font-size: 17px;
-        font-weight: bold;
+        background:#007bff; color:white; border:none;
+        margin-top:12px; font-size:17px; font-weight:bold;
     }
 
-    button:hover {
-        background: #005fcc;
-    }
+    table { width:100%; border-collapse:collapse; margin-top:10px; }
+    th, td { border:1px solid #ddd; padding:10px; font-size:14px; }
+    th { background:#007bff; color:white; }
 
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 12px;
-    }
-
-    th, td {
-        border: 1px solid #ddd;
-        padding: 10px;
-        font-size: 15px;
-    }
-
-    th {
-        background: #007bff;
-        color: #fff;
-    }
-
-    @media (max-width: 600px) {
-        table, thead, tbody, th, td, tr {
-            display: block;
-        }
-
-        tr { margin-bottom: 15px; }
-        
-        td {
-            text-align: right;
-            padding-left: 50%;
-            position: relative;
-        }
-
-        td::before {
-            content: attr(data-label);
-            position: absolute;
-            left: 10px;
-            font-weight: bold;
-            text-align: left;
-        }
+    @media (max-width:600px) {
+        table, thead, tbody, th, td, tr { display:block; }
+        tr { margin-bottom:10px; }
+        td { padding-left:50%; position:relative; text-align:right; }
+        td::before { content:attr(data-label); position:absolute; left:10px; font-weight:bold; }
     }
 </style>
 
+</head>
+<body>
+
+<h1>Konarak HR System</h1>
+
+<div class="card">
+    <h2>Add Employee</h2>
+    <input id="emp_code" placeholder="Employee Code (KFB001)">
+    <input id="first_name" placeholder="First Name">
+    <input id="last_name" placeholder="Last Name">
+    <input id="email" placeholder="Email">
+    <input id="phone" placeholder="Phone">
+    <button onclick="createEmployee()">Save Employee</button>
+</div>
+
+<div class="card">
+    <h2>Employees List</h2>
+    <button onclick="listEmployees()">Refresh List</button>
+    <table id="empTable">
+        <thead>
+            <tr><th>ID</th><th>Code</th><th>Name</th><th>Email</th></tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<div class="card">
+    <h2>Apply Leave</h2>
+    <input id="leave_emp_id" placeholder="Employee ID">
+    <input id="leave_type" placeholder="Leave Type (Sick, Casual)">
+    <input id="leave_start" type="date">
+    <input id="leave_end" type="date">
+    <input id="leave_days" placeholder="Total Days">
+    <button onclick="applyLeave()">Apply Leave</button>
+</div>
+
+<div class="card">
+    <h2>Upload Document</h2>
+    <input type="file" id="docfile">
+    <input id="doc_emp_id" placeholder="Employee ID">
+    <select id="doc_type">
+        <option value="OFFER">Offer Letter</option>
+        <option value="RELIEVING">Relieving Letter</option>
+        <option value="ID_PROOF">ID Proof</option>
+        <option value="INVOICE">Invoice</option>
+    </select>
+    <button onclick="uploadDocument()">Upload Document</button>
+</div>
+
+<div class="card">
+    <h2>Generate Payslip PDF</h2>
+    <input id="p_emp_id" placeholder="Employee ID">
+    <input id="p_month" placeholder="Month (2025-12)">
+    <input id="p_basic" placeholder="Basic Salary">
+    <input id="p_hra" placeholder="HRA">
+    <input id="p_allow" placeholder="Allowances">
+    <input id="p_ded" placeholder="Deductions">
+    <input id="p_net" placeholder="Net Pay">
+    <button onclick="generatePayslip()">Generate Payslip</button>
+</div>
+
+<!-- ================= SCRIPT MOVED TO END (IMPORTANT) ================= -->
 <script>
-// YOUR BACKEND API URL + SECRET KEY
+// API
 const API_URL = "https://script.google.com/macros/s/AKfycbxaco_JdbFYgkIueNMVhVIwvCUSa_ZE-QQAT3UtV2B9r-fww7agGTkNsqwSk5301sMWEg/exec";
 const API_KEY = "konarak123456789secret";
 
-// GET REQUEST
 async function apiGet(params) {
     const url = new URL(API_URL);
     Object.keys(params).forEach(k => url.searchParams.append(k, params[k]));
@@ -109,7 +112,6 @@ async function apiGet(params) {
     return res.json();
 }
 
-// POST REQUEST
 async function apiPost(body) {
     body.key = API_KEY;
     const res = await fetch(API_URL, {
@@ -119,178 +121,77 @@ async function apiPost(body) {
     });
     return res.json();
 }
-</script>
 
-</head>
-<body>
-
-<h1>Konarak HR System</h1>
-
-
-<!-- ================= ADD EMPLOYEE ================= -->
-<div class="card">
-    <h2>Add Employee</h2>
-
-    <input id="emp_code" placeholder="Employee Code (KFB001)">
-    <input id="first_name" placeholder="First Name">
-    <input id="last_name" placeholder="Last Name">
-    <input id="email" placeholder="Email">
-    <input id="phone" placeholder="Phone">
-
-    <button onclick="createEmployee()">Save Employee</button>
-</div>
-
-
-<!-- ================= EMPLOYEE LIST ================= -->
-<div class="card">
-    <h2>Employees List</h2>
-    <button onclick="listEmployees()">Refresh List</button>
-
-    <table id="empTable">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Code</th>
-                <th>Name</th>
-                <th>Email</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-</div>
-
-
-<!-- ================= APPLY LEAVE ================= -->
-<div class="card">
-    <h2>Apply Leave</h2>
-
-    <input id="leave_emp_id" placeholder="Employee ID">
-    <input id="leave_type" placeholder="Leave Type (Sick, Casual)">
-    <input id="leave_start" type="date">
-    <input id="leave_end" type="date">
-    <input id="leave_days" placeholder="Total Days">
-
-    <button onclick="applyLeave()">Apply Leave</button>
-</div>
-
-
-<!-- ================= DOCUMENT UPLOAD ================= -->
-<div class="card">
-    <h2>Upload Document</hh2>
-
-    <input type="file" id="docfile">
-    <input id="doc_emp_id" placeholder="Employee ID">
-    <select id="doc_type">
-        <option value="OFFER">Offer Letter</option>
-        <option value="RELIEVING">Relieving Letter</option>
-        <option value="ID_PROOF">ID Proof</option>
-        <option value="INVOICE">Invoice</option>
-    </select>
-
-    <button onclick="uploadDocument()">Upload Document</button>
-</div>
-
-
-<!-- ================= PAYSLIP ================= -->
-<div class="card">
-    <h2>Generate Payslip PDF</h2>
-
-    <input id="p_emp_id" placeholder="Employee ID">
-    <input id="p_month" placeholder="Month (2025-12)">
-    <input id="p_basic" placeholder="Basic Salary">
-    <input id="p_hra" placeholder="HRA">
-    <input id="p_allow" placeholder="Allowances">
-    <input id="p_ded" placeholder="Deductions">
-    <input id="p_net" placeholder="Net Pay">
-
-    <button onclick="generatePayslip()">Generate Payslip</button>
-</div>
-
-
-<script>
-
-/*************** ADD EMPLOYEE ****************/
+// FEATURES
 async function createEmployee() {
-    const payload = {
-        action: "create_employee",
+    const r = await apiPost({
+        action:"create_employee",
         emp_code: emp_code.value,
         first_name: first_name.value,
         last_name: last_name.value,
         email: email.value,
         phone: phone.value,
-        status: "active"
-    };
-
-    const r = await apiPost(payload);
+        status:"active"
+    });
     alert("Employee Added! ID = " + r.id);
     listEmployees();
 }
 
-/*************** LIST EMPLOYEES ****************/
 async function listEmployees() {
     const r = await apiGet({action:"list_employees"});
     const tbody = document.querySelector("#empTable tbody");
     tbody.innerHTML = "";
-
     r.data.forEach(emp => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-            <td data-label="ID">${emp.id}</td>
-            <td data-label="Code">${emp.emp_code}</td>
-            <td data-label="Name">${emp.first_name} ${emp.last_name}</td>
-            <td data-label="Email">${emp.email}</td>
+        tbody.innerHTML += `
+            <tr>
+                <td data-label="ID">${emp.id}</td>
+                <td data-label="Code">${emp.emp_code}</td>
+                <td data-label="Name">${emp.first_name} ${emp.last_name}</td>
+                <td data-label="Email">${emp.email}</td>
+            </tr>
         `;
-        tbody.appendChild(tr);
     });
 }
 
-/*************** APPLY LEAVE ****************/
 async function applyLeave() {
-    const payload = {
-        action: "apply_leave",
+    const r = await apiPost({
+        action:"apply_leave",
         employee_id: leave_emp_id.value,
         leave_type: leave_type.value,
         start_date: leave_start.value,
         end_date: leave_end.value,
         days: leave_days.value
-    };
-
-    const r = await apiPost(payload);
-    alert("Leave Applied! ID = " + r.id);
+    });
+    alert("Leave applied! ID = " + r.id);
 }
 
-/*************** DOCUMENT UPLOAD ****************/
 async function uploadDocument() {
-    const f = document.getElementById("docfile");
-    if (!f.files.length) return alert("Select a file first.");
+    const input = document.getElementById("docfile");
+    if (!input.files.length) return alert("Select a file.");
+    const file = input.files[0];
 
-    const file = f.files[0];
     const reader = new FileReader();
-
     reader.onload = async function(e) {
         const base64 = e.target.result.split(",")[1];
 
-        const payload = {
-            action: "upload_document",
+        const r = await apiPost({
+            action:"upload_document",
             employee_id: doc_emp_id.value,
             doc_type: doc_type.value,
             filename: file.name,
             mime: file.type,
             file_base64: base64,
-            uploaded_by: "HR_Admin"
-        };
+            uploaded_by:"HR_Admin"
+        });
 
-        const r = await apiPost(payload);
-        alert("Document Uploaded!\n" + r.file_url);
+        alert("Document uploaded: " + r.file_url);
     };
-
     reader.readAsDataURL(file);
 }
 
-/*************** PAYSLIP PDF ****************/
 async function generatePayslip() {
-    const payload = {
-        action: "generate_payslip",
+    const r = await apiPost({
+        action:"generate_payslip",
         employee_id: p_emp_id.value,
         month: p_month.value,
         basic: p_basic.value,
@@ -298,13 +199,10 @@ async function generatePayslip() {
         allowances: p_allow.value,
         deductions: p_ded.value,
         net_pay: p_net.value
-    };
-
-    const r = await apiPost(payload);
+    });
     if (r.payslip_url) window.open(r.payslip_url, "_blank");
     else alert("Error: " + r.error);
 }
-
 </script>
 
 </body>
