@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>POST Test</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body style="font-family:Arial;padding:20px">
+
+<h2>Test POST to Backend</h2>
+
+<button onclick="sendTest()">Send Test POST</button>
+
+<pre id="output" style="background:#eee;padding:15px;margin-top:20px;white-space:pre-wrap;"></pre>
+
+<script>
+function sendTest() {
+    fetch("https://script.google.com/macros/s/AKfycbxaco_JdbFYgkIueNMVhVIwvCUSa_ZE-QQAT3UtV2B9r-fww7agGTkNsqwSk5301sMWEg/exec", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({
+            action:"create_employee",
+            key:"konarak123456789secret",
+            emp_code:"TEST101",
+            first_name:"Test",
+            last_name:"User"
+        })
+    })
+    .then(r => r.text())
+    .then(txt => document.getElementById("output").innerText = txt)
+    .catch(err => document.getElementById("output").innerText = err.toString());
+}
+</script>
+
+</body>
+</html>
