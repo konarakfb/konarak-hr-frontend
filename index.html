@@ -1,434 +1,214 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Konarak F&B — HR System (Final)</title>
-<style>
-  :root{
-    --brand:#0a7cff; --muted:#6b7280; --card:#fff; --bg:#f4f7fb;
-  }
-  html,body{height:100%;margin:0;font-family:Inter, system-ui, Arial, sans-serif;background:var(--bg);color:#111}
-  .app{display:flex;min-height:100vh;flex-direction:row}
-  .sidebar{width:260px;background:linear-gradient(180deg,#fff,#f8fbff);border-right:1px solid #e6eefc;padding:18px;box-sizing:border-box}
-  .brand{font-weight:700;color:var(--brand);font-size:20px;margin-bottom:8px}
-  .menu{margin-top:18px;display:flex;flex-direction:column;gap:6px}
-  .menu button{background:transparent;border:0;text-align:left;padding:10px;border-radius:8px;cursor:pointer;font-size:15px;color:#111}
-  .menu button.active{background:rgba(10,124,255,0.12);color:var(--brand)}
-  .small{font-size:13px;color:var(--muted);margin-top:8px}
-  .main{flex:1;padding:16px;box-sizing:border-box}
-  .topbar{display:flex;align-items:center;gap:10px}
-  .hamburger{display:none;background:var(--brand);color:#fff;border:0;padding:8px;border-radius:8px;cursor:pointer}
-  .page{margin-top:14px}
-  .card{background:var(--card);padding:14px;border-radius:10px;box-shadow:0 6px 14px rgba(12,35,80,0.04);margin-bottom:14px}
-  .row{display:flex;gap:10px}
-  .col{flex:1}
-  input,select,textarea,button{width:100%;padding:10px;border-radius:8px;border:1px solid #e3e8ff;font-size:15px;box-sizing:border-box}
-  button.primary{background:var(--brand);color:#fff;border:0}
-  .table{width:100%;border-collapse:collapse;margin-top:10px}
-  .table th,.table td{padding:10px;border-bottom:1px solid #f0f3ff;text-align:left}
-  .flex{display:flex;gap:8px;align-items:center}
-  .muted{color:var(--muted);font-size:13px}
-  .drawer{position:fixed;left:-320px;top:0;bottom:0;width:260px;background:white;z-index:1000;padding:18px;box-shadow:10px 0 30px rgba(0,0,0,0.12);transition:left .22s}
-  .drawer.open{left:0}
-  .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.28);display:none;z-index:999}
-  .overlay.show{display:block}
-  .loginModal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);z-index:2000}
-  .loginBox{width:360px;background:white;padding:20px;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,0.2)}
-  .smallbtn{padding:8px 10px;border-radius:6px;border:0;background:#eee;cursor:pointer}
-  @media (max-width:900px){
-    .sidebar{display:none}
-    .hamburger{display:inline-block}
-    .app{flex-direction:column}
-    .main{padding:12px}
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Konarak HR System</title>
+
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f4f4f4; }
+    header { background: #0a7cff; color: white; padding: 15px; text-align: center; font-size: 20px; }
+    #container { display: flex; min-height: 100vh; }
+    #menu {
+      width: 220px; background: white; border-right: solid 1px #ddd;
+      padding: 15px; box-sizing: border-box;
+    }
+    #menu button {
+      width: 100%; padding: 10px; margin-bottom: 8px; border: 1px solid #ccc;
+      border-radius: 6px; background: #f8f8f8; cursor: pointer;
+    }
+    #content { flex: 1; padding: 20px; }
+    .card {
+      background: white; padding: 20px; border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px;
+    }
+    input, select {
+      width: 100%; padding: 10px; margin-top: 8px;
+      border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box;
+    }
+    button.primary {
+      background: #0a7cff; color: white; border: none;
+      padding: 10px 16px; border-radius: 6px; margin-top: 12px; cursor: pointer;
+    }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    th, td {
+      border: 1px solid #ddd; padding: 10px; text-align: left;
+    }
+    th { background: #e9e9e9; }
+    
+    /* MOBILE */
+    @media (max-width: 768px) {
+      #container { flex-direction: column; }
+      #menu { width: 100%; border-right: none; border-bottom: 1px solid #ddd; }
+      #menu button { margin-bottom: 5px; }
+    }
+  </style>
 </head>
+
 <body>
 
-<!-- Simple client-side login modal -->
-<div id="loginModal" class="loginModal" style="display:none">
-  <div class="loginBox">
-    <h3 style="margin:0 0 6px 0">Konarak F&B — HR Login</h3>
-    <div class="muted" style="margin-bottom:12px">Only HR may access</div>
-    <input id="login_username" placeholder="Username" value="hradmin">
-    <input id="login_password" placeholder="Password" type="password" style="margin-top:8px">
-    <div style="display:flex;gap:8px;margin-top:12px">
-      <button class="primary" onclick="doLogin()">Login</button>
-      <button class="smallbtn" onclick="demoCreds()">Demo creds</button>
-    </div>
-    <div id="loginMsg" class="muted" style="margin-top:10px;font-size:13px"></div>
+<header>Konarak F&B - HR System</header>
+
+<div id="container">
+
+  <!-- SIDE MENU -->
+  <div id="menu">
+    <button onclick="showPage('dashboard')">Dashboard</button>
+    <button onclick="showPage('employees')">Employees</button>
   </div>
-</div>
 
-<!-- Main application -->
-<div id="appRoot" style="display:none">
-  <div class="app">
-    <aside class="sidebar" id="desktopSidebar">
-      <div class="brand">Konarak F&B — HR</div>
-      <div class="small">Manage staff, payroll, attendance & docs</div>
-      <nav class="menu" id="menuDesktop">
-        <button data-section="dashboard" class="active">Dashboard</button>
-        <button data-section="employees">Employees</button>
-        <button data-section="attendance">Attendance</button>
-        <button data-section="leaves">Leaves</button>
-        <button data-section="salary">Salary</button>
-        <button data-section="documents">Documents</button>
-        <button data-section="letters">Letters</button>
-        <button data-section="settings">Settings</button>
-      </nav>
-      <div style="margin-top:18px" class="muted">Logged as: <span id="loggedUser">HR Admin</span></div>
-      <div style="margin-top:12px"><button class="smallbtn" onclick="logout()">Logout</button></div>
-    </aside>
+  <!-- CONTENT -->
+  <div id="content">
 
-    <div class="drawer" id="drawer">
-      <div class="brand">Konarak F&B — HR</div>
-      <nav class="menu" id="menuMobile">
-        <button data-section="dashboard">Dashboard</button>
-        <button data-section="employees">Employees</button>
-        <button data-section="attendance">Attendance</button>
-        <button data-section="leaves">Leaves</button>
-        <button data-section="salary">Salary</button>
-        <button data-section="documents">Documents</button>
-        <button data-section="letters">Letters</button>
-        <button data-section="settings">Settings</button>
-      </nav>
+    <!-- DASHBOARD PAGE -->
+    <div id="dashboard" class="page">
+      <div class="card">
+        <h2>Dashboard</h2>
+        <p>Total Employees: <b id="dash_total">0</b></p>
+      </div>
     </div>
-    <div class="overlay" id="overlay" onclick="closeDrawer()"></div>
 
-    <main class="main">
-      <div class="topbar">
-        <button class="hamburger" id="hambBtn" onclick="openDrawer()">☰</button>
-        <div style="flex:1">
-          <strong id="pageTitle">Dashboard</strong>
-          <div class="muted" id="pageSub">Overview & quick actions</div>
-        </div>
-        <div class="flex"><button onclick="pingTest()">Ping</button></div>
+    <!-- EMPLOYEE PAGE -->
+    <div id="employees" class="page" style="display:none;">
+      <div class="card">
+        <h2>Add Employee</h2>
+
+        <input id="emp_emp_code" placeholder="Employee Code (KFB001)">
+        <input id="emp_first_name" placeholder="First Name">
+        <input id="emp_last_name" placeholder="Last Name">
+        <input id="emp_email" placeholder="Email">
+        <input id="emp_phone" placeholder="Phone">
+        <input id="emp_dob" type="date" placeholder="DOB">
+        <input id="emp_joining_date" type="date" placeholder="Joining Date">
+        <input id="emp_relieving_date" type="date" placeholder="Relieving Date">
+
+        <select id="emp_department">
+          <option value="">Select Department</option>
+          <option>HR</option>
+          <option>Kitchen</option>
+          <option>Billing</option>
+          <option>Service</option>
+          <option>Store</option>
+        </select>
+
+        <input id="emp_role" placeholder="Role">
+        <select id="emp_status">
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
+
+        <button class="primary" onclick="saveEmployee()">Save Employee</button>
       </div>
 
-      <div id="content">
-        <!-- Dashboard -->
-        <section id="dashboard" class="page">
-          <div class="card">
-            <h2>Dashboard</h2>
-            <div class="row">
-              <div class="col card"><div class="muted">Employees</div><div id="dashEmployees" style="font-size:22px;font-weight:700">—</div></div>
-              <div class="col card"><div class="muted">Pending Leaves</div><div id="dashLeaves" style="font-size:22px;font-weight:700">—</div></div>
-              <div class="col card"><div class="muted">Payslips</div><div id="dashPayslips" style="font-size:22px;font-weight:700">—</div></div>
-            </div>
-            <div style="display:flex;gap:8px;margin-top:12px">
-              <button class="primary" onclick="showSection('employees')">Add Employee</button>
-              <button class="primary" onclick="showSection('salary')">Generate Payslip</button>
-              <button onclick="showSection('documents')">Upload Doc</button>
-            </div>
-          </div>
-        </section>
-
-        <!-- Employees -->
-        <section id="employees" class="page" style="display:none">
-          <div class="card">
-            <h2>Add Employee (all fields)</h2>
-            <div class="row">
-              <div class="col"><input id="emp_emp_code" placeholder="Employee code (KFB001)"></div>
-              <div class="col"><input id="emp_first_name" placeholder="First name"></div>
-            </div>
-            <div class="row">
-              <div class="col"><input id="emp_last_name" placeholder="Last name"></div>
-              <div class="col"><input id="emp_email" placeholder="Email"></div>
-            </div>
-            <div class="row">
-              <div class="col"><input id="emp_phone" placeholder="Phone"></div>
-              <div class="col"><input id="emp_dob" type="date" placeholder="DOB"></div>
-            </div>
-            <div class="row">
-              <div class="col"><input id="emp_joining_date" type="date" placeholder="Joining date"></div>
-              <div class="col"><input id="emp_relieving_date" type="date" placeholder="Relieving date (optional)"></div>
-            </div>
-            <div class="row">
-              <div class="col">
-                <select id="emp_department">
-                  <option value="">Select Department</option>
-                  <option>HR</option><option>Kitchen</option><option>Service</option><option>Billing</option><option>Store</option><option>Management</option>
-                </select>
-              </div>
-              <div class="col"><input id="emp_role" placeholder="Role / Designation"></div>
-            </div>
-
-            <div style="margin-top:10px">
-              <select id="emp_status"><option value="active">Active</option><option value="inactive">Inactive</option></select>
-              <div style="margin-top:8px"><button class="primary" onclick="createEmployee()">Save Employee</button></div>
-            </div>
-          </div>
-
-          <div class="card">
-            <h2>Employees — List</h2>
-            <div class="muted">Search by name, code or email</div>
-            <input id="emp_search" placeholder="Search employees" oninput="renderEmployees()" />
-            <table class="table" id="emp_table"><thead><tr><th>ID</th><th>Code</th><th>Name</th><th>Email</th><th>Phone</th><th>Dept</th><th>Role</th></tr></thead><tbody></tbody></table>
-          </div>
-        </section>
-
-        <!-- Attendance -->
-        <section id="attendance" class="page" style="display:none">
-          <div class="card">
-            <h2>Mark Attendance</h2>
-            <div class="row">
-              <div class="col"><input id="att_emp_id" placeholder="Employee ID"></div>
-              <div class="col"><input id="att_date" type="date"></div>
-            </div>
-            <div class="row" style="margin-top:8px">
-              <div class="col"><select id="att_status"><option value="PRESENT">Present</option><option value="ABSENT">Absent</option><option value="ON_LEAVE">On Leave</option></select></div>
-              <div class="col"><input id="att_note" placeholder="Note (optional)"></div>
-            </div>
-            <div style="margin-top:10px"><button class="primary" onclick="addAttendance()">Mark Attendance</button></div>
-          </div>
-
-          <div class="card">
-            <h2>View Attendance</h2>
-            <input id="att_view_emp" placeholder="Employee ID" />
-            <button onclick="listAttendance()">View Attendance</button>
-            <table class="table" id="att_table"><thead><tr><th>Date</th><th>Checkin</th><th>Checkout</th><th>Status</th></tr></thead><tbody></tbody></table>
-          </div>
-        </section>
-
-        <!-- Leaves -->
-        <section id="leaves" class="page" style="display:none">
-          <div class="card">
-            <h2>Apply for Leave</h2>
-            <div class="row">
-              <div class="col"><input id="leave_emp" placeholder="Employee ID"></div>
-              <div class="col"><input id="leave_type" placeholder="Leave type (Sick/Casual/Earned)"></div>
-            </div>
-            <div class="row">
-              <div class="col"><input id="leave_start" type="date"></div>
-              <div class="col"><input id="leave_end" type="date"></div>
-            </div>
-            <div style="margin-top:8px"><input id="leave_days" placeholder="Days (auto or enter)"/><button class="primary" onclick="applyLeave()">Apply Leave</button></div>
-          </div>
-
-          <div class="card">
-            <h2>Leaves — Pending (HR)</h2>
-            <div class="muted">Approve / Reject pending leaves (backend optional)</div>
-            <button onclick="listLeaves()">Refresh Leaves</button>
-            <table class="table" id="leaves_table"><thead><tr><th>ID</th><th>Emp ID</th><th>Type</th><th>From</th><th>To</th><th>Days</th><th>Status</th><th>Action</th></tr></thead><tbody></tbody></table>
-          </div>
-        </section>
-
-        <!-- Salary -->
-        <section id="salary" class="page" style="display:none">
-          <div class="card">
-            <h2>Generate Payslip</h2>
-            <div class="row">
-              <div class="col"><input id="sal_emp_id" placeholder="Employee ID"></div>
-              <div class="col"><input id="sal_month" placeholder="Month (YYYY-MM)"></div>
-            </div>
-            <div class="row">
-              <div class="col"><input id="sal_basic" placeholder="Basic"></div>
-              <div class="col"><input id="sal_hra" placeholder="HRA"></div>
-            </div>
-            <div class="row">
-              <div class="col"><input id="sal_allow" placeholder="Allowances"></div>
-              <div class="col"><input id="sal_ded" placeholder="Deductions"></div>
-            </div>
-            <div style="margin-top:10px"><button class="primary" onclick="generatePayslip()">Generate Payslip</button></div>
-          </div>
-
-          <div class="card">
-            <h2>Salary Records</h2>
-            <div class="muted">View salary records (backend support required)</div>
-            <button onclick="listSalaries()">Refresh Salary Records</button>
-            <table class="table" id="salary_table"><thead><tr><th>ID</th><th>Emp ID</th><th>Month</th><th>Net Pay</th></tr></thead><tbody></tbody></table>
-          </div>
-        </section>
-
-        <!-- Documents -->
-        <section id="documents" class="page" style="display:none">
-          <div class="card">
-            <h2>Upload Document</h2>
-            <input type="file" id="doc_file" />
-            <input id="doc_emp" placeholder="Employee ID" />
-            <select id="doc_kind"><option value="OFFER">Offer</option><option value="RELIEVING">Relieving</option><option value="ID_PROOF">ID Proof</option><option value="INVOICE">Invoice</option></select>
-            <div style="margin-top:8px"><button class="primary" onclick="uploadDocument()">Upload Document</button></div>
-          </div>
-
-          <div class="card">
-            <h2>Documents — List</h2>
-            <div class="muted">Backend endpoint required to list documents</div>
-            <button onclick="listDocuments()">Refresh Documents</button>
-            <table class="table" id="docs_table"><thead><tr><th>ID</th><th>Emp ID</th><th>Type</th><th>File</th></tr></thead><tbody></tbody></table>
-          </div>
-        </section>
-
-        <!-- Letters -->
-        <section id="letters" class="page" style="display:none">
-          <div class="card">
-            <h2>Offer Letter Generator</h2>
-            <input id="offer_emp_id" placeholder="Employee ID">
-            <input id="offer_designation" placeholder="Designation">
-            <input id="offer_salary" placeholder="CTC / Salary">
-            <textarea id="offer_notes" placeholder="Notes / special terms" rows="4"></textarea>
-            <div style="margin-top:8px"><button class="primary" onclick="generateOfferLetter()">Generate Offer</button></div>
-          </div>
-
-          <div class="card">
-            <h2>Relieving Letter Generator</h2>
-            <input id="rel_emp_id" placeholder="Employee ID">
-            <input id="rel_last_day" type="date" placeholder="Last working day">
-            <textarea id="rel_notes" placeholder="Relieving notes" rows="4"></textarea>
-            <div style="margin-top:8px"><button class="primary" onclick="generateRelievingLetter()">Generate Relieving Letter</button></div>
-          </div>
-        </section>
-
-        <!-- Settings -->
-        <section id="settings" class="page" style="display:none">
-          <div class="card">
-            <h2>Settings</h2>
-            <div class="muted">API / keys & instructions</div>
-            <div style="margin-top:8px">API URL: <code id="cfg_api"></code></div>
-            <div style="margin-top:8px">Important: This login is client-side only. For production, implement backend login & token validation in Apps Script.</div>
-          </div>
-        </section>
-
+      <div class="card">
+        <h2>Employee List</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th><th>Code</th><th>Name</th><th>Phone</th><th>Dept</th>
+            </tr>
+          </thead>
+          <tbody id="emp_table"></tbody>
+        </table>
       </div>
-    </main>
+    </div>
+
   </div>
 </div>
 
 <script>
-/* ========== CONFIG ========== */
+/* ------------------------ CONFIG ------------------------ */
 const API_URL = "https://script.google.com/macros/s/AKfycbz4rodVHWpkqjpITJbozIZpRX6rE8G7jSgMwfEs30zj51wFMYH0RdiTFL9Cz2bQqo7U/exec";
 const API_KEY = "konarak123456789secret";
 
-/* login (client-side) — change if needed */
-const defaultUser = "hradmin";
-const defaultPassword = "konarak@123";
-function demoCreds(){ document.getElementById('login_username').value = defaultUser; document.getElementById('login_password').value = defaultPassword; }
-function isLoggedIn(){ return localStorage.getItem('konarak_token') === 'konarak_token_v1'; }
-function showLoginIfRequired(){ if(!isLoggedIn()){ document.getElementById('loginModal').style.display='flex'; document.getElementById('appRoot').style.display='none'; } else { document.getElementById('loginModal').style.display='none'; document.getElementById('appRoot').style.display=''; initApp(); } }
-function doLogin(){ const u=document.getElementById('login_username').value; const p=document.getElementById('login_password').value; if(u===defaultUser && p===defaultPassword){ localStorage.setItem('konarak_token','konarak_token_v1'); document.getElementById('loggedUser').innerText = u; document.getElementById('loginModal').style.display='none'; document.getElementById('appRoot').style.display=''; initApp(); } else { document.getElementById('loginMsg').innerText='Invalid credentials'; } }
-function logout(){ localStorage.removeItem('konarak_token'); location.reload(); }
+/* ------------------------ PAGE SWITCH ------------------------ */
+function showPage(page) {
+  document.querySelectorAll(".page").forEach(p => p.style.display = "none");
+  document.getElementById(page).style.display = "block";
 
-/* Drawer & menu */
-const drawer = document.getElementById('drawer'), overlay = document.getElementById('overlay');
-function openDrawer(){ drawer.classList.add('open'); overlay.classList.add('show'); }
-function closeDrawer(){ drawer.classList.remove('open'); overlay.classList.remove('show'); }
-document.getElementById('menuMobile').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{ showSection(b.dataset.section); closeDrawer(); }));
-document.getElementById('menuDesktop').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{ showSection(b.dataset.section); }));
-
-function setActiveMenu(section){ document.querySelectorAll('.menu button').forEach(btn=> btn.classList.toggle('active', btn.dataset.section===section)); }
-
-/* ========== API helpers with robust error handling ========== */
-async function apiGet(params={}){
-  try{
-    // add cache-buster
-    params._ts = Date.now();
-    const url = new URL(API_URL);
-    Object.keys(params).forEach(k=> url.searchParams.append(k, params[k]));
-    url.searchParams.append('key', API_KEY);
-    const resp = await fetch(url.toString(), {cache:'no-store'});
-    const text = await resp.text();
-    try{ return JSON.parse(text); } catch(e){ return { success:false, error: 'Non-JSON response: '+text }; }
-  } catch(err){ return { success:false, error: err.toString() }; }
+  if (page === "employees") loadEmployees();
+  if (page === "dashboard") loadEmployeesDashboard();
 }
 
-async function apiPost(body={}){
-  try{
-    body.key = API_KEY;
-    const resp = await fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-      cache: 'no-store'
-    });
-    const text = await resp.text();
-    try{ return JSON.parse(text); } catch(e){ return { success:false, error: 'Non-JSON response: '+text }; }
-  } catch(err){ return { success:false, error: err.toString() }; }
-}
+/* ------------------------ SAVE EMPLOYEE ------------------------ */
+async function saveEmployee() {
 
-/* Basic checks */
-async function pingTest(){ const r = await apiGet({action:'ping'}); alert('Ping: '+JSON.stringify(r)); }
-
-/* App init & routing */
-function showSection(name){
-  document.querySelectorAll('.page').forEach(s=> s.style.display = (s.id===name)?'':'none');
-  document.getElementById('pageTitle').innerText = name.charAt(0).toUpperCase()+name.slice(1);
-  document.getElementById('pageSub').innerText = ({dashboard:'Overview & quick actions', employees:'Manage employees', attendance:'Track attendance', leaves:'Apply & approve leaves', salary:'Payroll & payslips', documents:'Manage files', letters:'Generate letters', settings:'Configuration'}[name]||'');
-  setActiveMenu(name);
-  if(name==='employees') listEmployees();
-  if(name==='dashboard') refreshDashboard();
-  if(name==='leaves') listLeaves();
-  if(name==='documents') listDocuments();
-  if(name==='salary') listSalaries();
-}
-function initApp(){ document.getElementById('cfg_api').innerText = API_URL; showSection('dashboard'); refreshDashboard(); }
-
-/* Dashboard */
-async function refreshDashboard(){ const empR = await apiGet({action:'list_employees'}); const num = (empR.success && empR.data)?empR.data.length:0; document.getElementById('dashEmployees').innerText = num; }
-
-/* Employees */
-let EMPLOYEES_CACHE = [];
-async function createEmployee(){
   const payload = {
-    action:'create_employee',
-    emp_code: document.getElementById('emp_emp_code').value||'',
-    first_name: document.getElementById('emp_first_name').value||'',
-    last_name: document.getElementById('emp_last_name').value||'',
-    email: document.getElementById('emp_email').value||'',
-    phone: document.getElementById('emp_phone').value||'',
-    dob: document.getElementById('emp_dob').value||'',
-    joining_date: document.getElementById('emp_joining_date').value||'',
-    relieving_date: document.getElementById('emp_relieving_date').value||'',
-    department: document.getElementById('emp_department').value||'',
-    role: document.getElementById('emp_role').value||'',
-    status: document.getElementById('emp_status').value||'active'
+    action: "create_employee",
+    key: API_KEY,
+
+    emp_code:        document.getElementById("emp_emp_code").value,
+    first_name:      document.getElementById("emp_first_name").value,
+    last_name:       document.getElementById("emp_last_name").value,
+    email:           document.getElementById("emp_email").value,
+    phone:           document.getElementById("emp_phone").value,
+    dob:             document.getElementById("emp_dob").value,
+    joining_date:    document.getElementById("emp_joining_date").value,
+    relieving_date:  document.getElementById("emp_relieving_date").value,
+    department:      document.getElementById("emp_department").value,
+    role:            document.getElementById("emp_role").value,
+    status:          document.getElementById("emp_status").value
   };
-  const r = await apiPost(payload);
-  if(r.success){ alert('Employee added — ID: '+r.id); listEmployees(); clearEmpForm(); } else { alert('Error creating employee: '+ (r.error||JSON.stringify(r))); console.error('createEmployee error:', r); }
+
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+    console.log("SAVE RESPONSE:", data);
+
+    if (data.success) {
+      alert("Employee added!");
+      loadEmployees();
+    } else {
+      alert("Error: " + data.error);
+    }
+
+  } catch (err) {
+    alert("Failed to fetch: " + err);
+  }
 }
-function clearEmpForm(){ ['emp_emp_code','emp_first_name','emp_last_name','emp_email','emp_phone','emp_dob','emp_joining_date','emp_relieving_date','emp_department','emp_role'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; }); }
-async function listEmployees(){
-  const r = await apiGet({action:'list_employees'});
-  if(!r.success){ alert('Error listing employees: '+(r.error||JSON.stringify(r))); return; }
-  EMPLOYEES_CACHE = r.data||[];
-  renderEmployees();
+
+/* ------------------------ LOAD EMPLOYEES ------------------------ */
+async function loadEmployees() {
+  const url = `${API_URL}?action=list_employees&key=${API_KEY}`;
+  const res = await fetch(url);
+  const data = await res.json();
+
+  console.log("LIST:", data);
+
+  const tbody = document.getElementById("emp_table");
+  tbody.innerHTML = "";
+
+  if (data.success) {
+    data.data.forEach(emp => {
+      tbody.innerHTML += `
+        <tr>
+          <td>${emp.id}</td>
+          <td>${emp.emp_code}</td>
+          <td>${emp.first_name} ${emp.last_name}</td>
+          <td>${emp.phone}</td>
+          <td>${emp.department}</td>
+        </tr>
+      `;
+    });
+  }
 }
-function renderEmployees(){
-  const q = document.getElementById('emp_search')?.value?.toLowerCase()||'';
-  const tbody = document.querySelector('#emp_table tbody'); tbody.innerHTML = '';
-  (EMPLOYEES_CACHE||[]).filter(emp=>{
-    if(!q) return true;
-    return (emp.emp_code||'').toLowerCase().includes(q) || (emp.first_name||'').toLowerCase().includes(q) || (emp.email||'').toLowerCase().includes(q);
-  }).forEach(emp=>{
-    const tr=document.createElement('tr');
-    tr.innerHTML = `<td>${emp.id||''}</td><td>${emp.emp_code||''}</td><td>${(emp.first_name||'')+' '+(emp.last_name||'')}</td><td>${emp.email||''}</td><td>${emp.phone||''}</td><td>${emp.department||''}</td><td>${emp.role||''}</td>`;
-    tbody.appendChild(tr);
-  });
+
+/* ------------------------ DASHBOARD ------------------------ */
+async function loadEmployeesDashboard() {
+  const url = `${API_URL}?action=list_employees&key=${API_KEY}`;
+  const res = await fetch(url);
+  const data = await res.json();
+
+  if (data.success) {
+    document.getElementById("dash_total").innerText = data.data.length;
+  }
 }
-
-/* Attendance (UI calls backend if implemented) */
-async function addAttendance(){ const payload={ action:'create_attendance', employee_id: document.getElementById('att_emp_id').value, date: document.getElementById('att_date').value, status: document.getElementById('att_status').value, note: document.getElementById('att_note').value }; const r=await apiPost(payload); if(r.success) alert('Attendance recorded: '+r.id); else alert('Attendance error: '+(r.error||JSON.stringify(r))); }
-async function listAttendance(){ const empId=document.getElementById('att_view_emp').value; if(!empId) return alert('Enter employee ID'); const r=await apiGet({action:'list_attendance', employee_id:empId}); if(!r.success) return alert('Error: '+r.error); const tbody=document.querySelector('#att_table tbody'); tbody.innerHTML=''; (r.data||[]).forEach(row=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td>${row.date||''}</td><td>${row.checkin||''}</td><td>${row.checkout||''}</td><td>${row.status||''}</td>`; tbody.appendChild(tr); }); }
-
-/* Leaves */
-async function applyLeave(){ const payload={ action:'apply_leave', employee_id: document.getElementById('leave_emp').value, leave_type: document.getElementById('leave_type').value, start_date: document.getElementById('leave_start').value, end_date: document.getElementById('leave_end').value, days: document.getElementById('leave_days').value }; const r=await apiPost(payload); if(r.success){ alert('Leave applied: ID '+r.id); listLeaves(); } else alert('Apply leave error: '+(r.error||JSON.stringify(r))); }
-async function listLeaves(){ const r=await apiGet({action:'list_leaves'}); if(!r.success){ document.querySelector('#leaves_table tbody').innerHTML='<tr><td colspan="8">Requires backend endpoint: list_leaves</td></tr>'; return; } const tbody=document.querySelector('#leaves_table tbody'); tbody.innerHTML=''; (r.data||[]).forEach(l=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td>${l.id}</td><td>${l.employee_id}</td><td>${l.leave_type}</td><td>${l.start_date}</td><td>${l.end_date}</td><td>${l.days}</td><td>${l.status}</td><td><button onclick="decideLeave(${l.id}, 'APPROVE')">Approve</button> <button onclick="decideLeave(${l.id}, 'REJECT')">Reject</button></td>`; tbody.appendChild(tr); }); }
-async function decideLeave(id,decision){ const r=await apiPost({action:'decide_leave', id, decision}); if(r.success){ alert('Decision saved'); listLeaves(); } else alert('Decide leave error: '+(r.error||JSON.stringify(r))); }
-
-/* Salary */
-async function generatePayslip(){ const payload={ action:'generate_payslip', employee_id: document.getElementById('sal_emp_id').value, month: document.getElementById('sal_month').value, basic: document.getElementById('sal_basic').value, hra: document.getElementById('sal_hra').value, allowances: document.getElementById('sal_allow').value, deductions: document.getElementById('sal_ded').value, net_pay: (Number(document.getElementById('sal_basic').value||0) + Number(document.getElementById('sal_allow').value||0) - Number(document.getElementById('sal_ded').value||0)) }; const r=await apiPost(payload); if(r.payslip_url){ window.open(r.payslip_url,'_blank'); alert('Payslip created'); } else alert('Payslip error: '+(r.error||JSON.stringify(r))); listSalaries(); }
-async function listSalaries(){ const r=await apiGet({action:'list_salaries'}); if(!r.success){ document.querySelector('#salary_table tbody').innerHTML='<tr><td colspan="4">Requires backend endpoint: list_salaries</td></tr>'; return; } const tbody=document.querySelector('#salary_table tbody'); tbody.innerHTML=''; (r.data||[]).forEach(s=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td>${s.id}</td><td>${s.employee_id}</td><td>${s.month||''}</td><td>${s.net_pay||''}</td>`; tbody.appendChild(tr); }); }
-
-/* Documents */
-async function uploadDocument(){ const fileInput=document.getElementById('doc_file'); if(!fileInput.files.length) return alert('Choose file first'); const file=fileInput.files[0]; const reader=new FileReader(); reader.onload=async function(evt){ const base64=evt.target.result.split(',')[1]; const payload={ action:'upload_document', employee_id: document.getElementById('doc_emp').value, doc_type: document.getElementById('doc_kind').value, filename: file.name, mime: file.type, file_base64: base64, uploaded_by: 'web_user' }; const r=await apiPost(payload); if(r.success){ alert('Uploaded: '+r.file_url); listDocuments(); } else alert('Upload error: '+(r.error||JSON.stringify(r))); }; reader.readAsDataURL(file); }
-async function listDocuments(){ const r=await apiGet({action:'list_documents'}); if(!r.success){ document.querySelector('#docs_table tbody').innerHTML='<tr><td colspan="4">Requires backend endpoint: list_documents</td></tr>'; return; } const tbody=document.querySelector('#docs_table tbody'); tbody.innerHTML=''; (r.data||[]).forEach(d=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td>${d.id}</td><td>${d.employee_id}</td><td>${d.doc_type}</td><td><a href="${d.url}" target="_blank">Open</a></td>`; tbody.appendChild(tr); }); }
-
-/* Letters (client-side generate + upload) */
-async function generateOfferLetter(){ const empId=document.getElementById('offer_emp_id').value; if(!empId) return alert('Enter employee ID'); const html=`<html><body style="font-family:Arial;padding:20px"><h2>Offer Letter</h2><p>Employee ID: ${empId}</p><p>Designation: ${document.getElementById('offer_designation').value}</p><p>Salary: ${document.getElementById('offer_salary').value}</p><p>${document.getElementById('offer_notes').value}</p><p>Regards,<br/>Konarak F&B</p></body></html>`; const blob=new Blob([html],{type:'text/html'}); const reader=new FileReader(); reader.onload=async e=>{ const base64=e.target.result.split(',')[1]; const r=await apiPost({ action:'upload_document', employee_id: empId, doc_type:'OFFER', filename:`Offer_${empId}.html`, mime:'text/html', file_base64: base64, uploaded_by:'web' }); if(r.success) alert('Offer uploaded: '+r.file_url); else alert('Offer upload error: '+(r.error||JSON.stringify(r))); }; reader.readAsDataURL(blob); }
-async function generateRelievingLetter(){ const empId=document.getElementById('rel_emp_id').value; if(!empId) return alert('Enter employee ID'); const html=`<html><body style="font-family:Arial;padding:20px"><h2>Relieving Letter</h2><p>Employee ID: ${empId}</p><p>Last working day: ${document.getElementById('rel_last_day').value}</p><p>${document.getElementById('rel_notes').value}</p><p>Regards,<br/>Konarak F&B</p></body></html>`; const blob=new Blob([html],{type:'text/html'}); const reader=new FileReader(); reader.onload=async e=>{ const base64=e.target.result.split(',')[1]; const r=await apiPost({ action:'upload_document', employee_id: empId, doc_type:'RELIEVING', filename:`Relieving_${empId}.html`, mime:'text/html', file_base64: base64, uploaded_by:'web' }); if(r.success) alert('Relieving uploaded: '+r.file_url); else alert('Relieving upload error: '+(r.error||JSON.stringify(r))); }; reader.readAsDataURL(blob); }
-
-/* Init */
-showLoginIfRequired();
-console.info("Frontend loaded. If any list shows 'Requires backend endpoint', add the server-side actions (I can paste them).");
 </script>
+
 </body>
 </html>
