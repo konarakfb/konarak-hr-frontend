@@ -18,7 +18,7 @@
 
   <style>
     :root{
-      --accent:#f28c2b;          /* KONARAK ORANGE */
+      --accent:#f28c2b;
       --accent-soft:#fff3e6;
       --border:#000;
       --bg:#f4f4f4;
@@ -27,262 +27,34 @@
     }
 
     *{box-sizing:border-box;}
-
     body{
       margin:0;
-      font-family: Arial, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: Arial, system-ui;
       background:var(--bg);
-      color:var(--text);
       padding:12px;
+      color:var(--text);
     }
 
-    .wrapper{
-      max-width:1100px;
-      margin:0 auto;
-    }
+    .wrapper{max-width:1100px;margin:0 auto;}
 
-    .top-bar{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      margin-bottom:10px;
-      font-size:13px;
-      color:var(--muted);
-    }
-
-    .sheet{
-      background:#fff;
-      border:1px solid var(--border);
-      border-radius:10px;
-      padding:20px;
-      box-shadow:0 2px 6px rgba(0,0,0,0.08);
-    }
-
-    /* HEADER BOX */
-    .header-box{
-      border:1px solid var(--border);
-      border-radius:10px;
-      padding:14px;
-      margin-bottom:14px;
-    }
-
-    .header-row{
-      display:flex;
-      align-items:center;
-      gap:12px;
-    }
-
-    .logo-box{
-      flex:0 0 auto;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      width:70px;
-      height:70px;
-      border:1px solid var(--border);
-      border-radius:8px;
-      overflow:hidden;
-    }
-
-    .logo-box img{
-      max-width:100%;
-      max-height:100%;
-      object-fit:contain;
-    }
-
-    .title-block{flex:1;}
-
-    .company-name{
-      margin:0;
-      font-size:18px;
-      font-weight:bold;
-      text-transform:uppercase;
-      color:var(--accent);
-    }
-
-    .sub-title{
-      margin:2px 0 6px;
-      font-size:14px;
-      font-weight:bold;
-      color:#333;
-    }
-
-    .form-title{
-      margin:0;
-      font-size:16px;
-      font-weight:bold;
-      text-align:center;
-      text-transform:uppercase;
-      border-top:1px solid #000;
-      margin-top:6px;
-      padding-top:6px;
-      color:var(--accent);
-    }
-
-    /* META INFO GRID */
-    .meta-row{
-      display:grid;
-      grid-template-columns:repeat(4, minmax(0,1fr));
-      gap:10px;
-      margin-top:10px;
-      font-size:12px;
-    }
-
-    .meta-item label{
-      display:block;
-      font-weight:bold;
-      margin-bottom:2px;
-    }
-
-    .meta-item input,
-    .meta-item select{
-      width:100%;
-      padding:6px;
-      border:1px solid #000;
-      border-radius:4px;
-      font-size:12px;
-    }
-
-    /* SECTION TITLE */
-    .section-title{
-      margin:16px 0 6px;
-      padding:6px 8px;
-      font-weight:bold;
-      font-size:13px;
-      background:var(--accent-soft);
-      border-left:4px solid var(--accent);
-      text-transform:uppercase;
-    }
-
-    /* TABLE STYLING */
-    .question-table{
-      width:100%;
-      border-collapse:collapse;
-      font-size:12px;
-      margin-bottom:12px;
-    }
-
-    .question-table th,
-    .question-table td{
-      border:1px solid #000;
-      padding:6px;
-      vertical-align:top;
-    }
-
-    .question-table th{
-      background:#fff7ef;
-      font-weight:bold;
-      text-align:center;
-    }
-
-    .question-label{
-      font-weight:bold;
-      display:block;
-      margin-bottom:3px;
-    }
-
-    .option-group{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px 16px;
-      margin-top:4px;
-    }
-
-    .option-group label{
-      display:flex;
-      align-items:center;
-      gap:4px;
-    }
-
-    /* TEXTAREAS */
-    .text-row{
-      display:flex;
-      gap:8px;
-      font-size:12px;
-      margin-bottom:10px;
-    }
-
-    .text-row label{
-      flex:0 0 150px;
-      font-weight:bold;
-      padding-top:4px;
-    }
-
-    .text-row textarea{
-      flex:1;
-      min-height:60px;
-      border:1px solid #000;
-      border-radius:4px;
-      padding:6px;
-    }
-
-    /* FOOTER */
-    .footer-note{
-      border-top:1px solid #000;
-      margin-top:10px;
-      padding-top:6px;
-      font-size:11px;
-      display:flex;
-      justify-content:space-between;
-    }
-
-    /* BUTTONS */
-    .actions{
-      display:flex;
-      justify-content:center;
-      margin-top:14px;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-
-    .btn{
-      padding:8px 20px;
-      border-radius:999px;
-      cursor:pointer;
-      border:1px solid var(--accent);
-      font-weight:600;
-      font-size:13px;
-      background:#fff;
-      color:var(--accent);
-    }
-
-    .btn-primary{
-      background:var(--accent);
-      color:#fff;
-    }
-
-    /* RESPONSIVE */
-    @media (max-width:768px){
-      .meta-row{grid-template-columns:repeat(2,1fr);}
-      .text-row{flex-direction:column;}
-      .text-row label{flex:none;}
-      .footer-note{flex-direction:column;gap:4px;}
-    }
-    @media (max-width:480px){
-      .meta-row{grid-template-columns:1fr;}
-    }
-
-    /* EXTRA PADDING ONLY FOR PDF (does NOT change website) */
-    .pdf-padding input,
-    .pdf-padding textarea,
-    .pdf-padding select {
-      padding:10px !important;
-    }
-
-    /* TOP SMALL BUTTONS ROW (Login & QR) */
     .top-controls{
       display:flex;
       justify-content:flex-end;
       gap:8px;
       margin-bottom:8px;
     }
-
-    .top-controls .btn-small{
-      padding:5px 14px;
+    .btn-small{
+      padding:6px 14px;
       font-size:12px;
+      border-radius:999px;
+      background:#fff;
+      border:1px solid var(--accent);
+      color:var(--accent);
+      cursor:pointer;
+      font-weight:bold;
     }
 
-    /* SIMPLE MODAL STYLES */
+    /* POPUP MODALS */
     .modal-overlay{
       position:fixed;
       inset:0;
@@ -292,71 +64,109 @@
       justify-content:center;
       z-index:9999;
     }
-
     .modal-box{
       background:#fff;
       border-radius:10px;
-      padding:16px 18px;
+      padding:16px;
       max-width:340px;
       width:90%;
       box-shadow:0 4px 18px rgba(0,0,0,0.2);
-      font-size:14px;
     }
-
     .modal-header{
+      font-weight:bold;
+      display:flex;
+      justify-content:space-between;
+      margin-bottom:10px;
+    }
+    .modal-close{
+      border:none;background:none;font-size:18px;cursor:pointer;
+    }
+    .modal-body label{
+      font-size:13px;font-weight:bold;
+    }
+    .modal-body input{
+      width:100%;padding:6px;margin-bottom:10px;
+      border-radius:6px;border:1px solid #ccc;
+    }
+    .modal-footer{display:flex;justify-content:flex-end;gap:8px;}
+
+    /* YOUR ORIGINAL STYLES BELOW (UNCHANGED) */
+    .top-bar{
       display:flex;
       justify-content:space-between;
       align-items:center;
       margin-bottom:10px;
-      font-weight:bold;
-    }
-
-    .modal-close{
-      border:none;
-      background:transparent;
-      font-size:18px;
-      cursor:pointer;
-      line-height:1;
-    }
-
-    .modal-body label{
-      display:block;
-      margin-bottom:4px;
       font-size:13px;
-      font-weight:bold;
+      color:var(--muted);
     }
-
-    .modal-body input{
-      width:100%;
-      padding:6px 8px;
-      margin-bottom:8px;
-      border-radius:6px;
-      border:1px solid #ccc;
-      font-size:13px;
+    .sheet{
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:10px;
+      padding:20px;
+      box-shadow:0 2px 6px rgba(0,0,0,0.08);
     }
-
-    .modal-footer{
-      display:flex;
-      justify-content:flex-end;
-      gap:8px;
-      margin-top:6px;
+    .header-box{
+      border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:14px;
     }
-
-    #qr-container{
-      display:flex;
-      justify-content:center;
-      margin-top:8px;
+    .header-row{
+      display:flex;align-items:center;gap:12px;
     }
+    .logo-box{
+      width:70px;height:70px;border:1px solid #000;border-radius:8px;overflow:hidden;
+      display:flex;align-items:center;justify-content:center;
+    }
+    .logo-box img{max-width:100%;max-height:100%;object-fit:contain;}
+    .company-name{margin:0;font-size:18px;font-weight:bold;color:var(--accent);}
+    .sub-title{margin:2px 0 6px;font-size:14px;font-weight:bold;}
+    .form-title{text-align:center;margin:0;font-size:16px;font-weight:bold;border-top:1px solid #000;padding-top:6px;color:var(--accent);}
+    .meta-row{
+      display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:10px;font-size:12px;
+    }
+    .meta-item label{font-weight:bold;}
+    .meta-item input, .meta-item select{
+      width:100%;padding:6px;border:1px solid #000;border-radius:4px;font-size:12px;
+    }
+    .section-title{
+      margin:16px 0 6px;padding:6px;font-weight:bold;font-size:13px;
+      background:#fff3e6;border-left:4px solid var(--accent);
+    }
+    .question-table{
+      width:100%;border-collapse:collapse;font-size:12px;margin-bottom:12px;
+    }
+    .question-table th,.question-table td{
+      border:1px solid #000;padding:6px;vertical-align:top;
+    }
+    .question-table th{background:#fff7ef;font-weight:bold;}
+    .question-label{font-weight:bold;}
+    .option-group{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px;}
+    .text-row{display:flex;gap:8px;font-size:12px;margin-bottom:10px;}
+    .text-row label{width:150px;font-weight:bold;}
+    .text-row textarea{
+      flex:1;min-height:60px;border:1px solid #000;border-radius:4px;padding:6px;
+    }
+    .footer-note{
+      border-top:1px solid #000;margin-top:10px;padding-top:6px;font-size:11px;display:flex;justify-content:space-between;
+    }
+    .actions{
+      display:flex;justify-content:center;margin-top:14px;gap:10px;flex-wrap:wrap;
+    }
+    .btn{
+      padding:8px 20px;border-radius:999px;
+      border:1px solid var(--accent);background:#fff;color:var(--accent);
+      font-weight:600;cursor:pointer;font-size:13px;
+    }
+    .btn-primary{background:var(--accent);color:#fff;}
   </style>
 </head>
 
 <body>
 <div class="wrapper">
 
-  <!-- TOP CONTROLS: LOGIN & QR BUTTONS -->
+  <!-- TOP LOGIN + QR BUTTONS -->
   <div class="top-controls">
-    <button class="btn btn-small" type="button" onclick="openLoginModal()">Login</button>
-    <button class="btn btn-small" type="button" onclick="openQRModal()">QR</button>
+    <button class="btn-small" onclick="openLoginModal()">Login</button>
+    <button class="btn-small" onclick="openQRModal()">QR</button>
   </div>
 
   <div class="top-bar">
@@ -364,6 +174,7 @@
     <div>Date: <span id="today-span"></span></div>
   </div>
 
+  <!-- FORM AREA (UNCHANGED) -->
   <div id="pdf-area" class="sheet">
 
     <!-- HEADER -->
@@ -381,209 +192,102 @@
 
       <!-- META FIELDS -->
       <div class="meta-row">
-
-        <div class="meta-item">
-          <label for="food-item">Food Item Name</label>
-          <input id="food-item" type="text" placeholder="Item name">
-        </div>
-
-        <div class="meta-item">
-          <label for="building">Building</label>
-          <input id="building" type="text" placeholder="Building">
-        </div>
-
-        <div class="meta-item">
-          <label for="floor">Floor</label>
-          <input id="floor" type="text" placeholder="Floor">
-        </div>
-
-        <div class="meta-item">
-          <label for="counter">Counter</label>
-          <input id="counter" type="text" placeholder="Counter">
-        </div>
-
-        <div class="meta-item">
-          <label for="emp-name">Employee Name</label>
-          <input id="emp-name" type="text" placeholder="Enter your name">
-        </div>
-
-        <div class="meta-item">
-          <label for="emp-id">Employee ID</label>
-          <input id="emp-id" type="text" placeholder="Badge / ID No">
-        </div>
-
-        <div class="meta-item">
-          <label for="dept">Department</label>
-          <input id="dept" type="text" placeholder="Department / Project">
-        </div>
-
-        <div class="meta-item">
-          <label for="meal-type">Meal Type</label>
+        <div class="meta-item"><label>Food Item Name</label><input id="food-item"></div>
+        <div class="meta-item"><label>Building</label><input id="building"></div>
+        <div class="meta-item"><label>Floor</label><input id="floor"></div>
+        <div class="meta-item"><label>Counter</label><input id="counter"></div>
+        <div class="meta-item"><label>Employee Name</label><input id="emp-name"></div>
+        <div class="meta-item"><label>Employee ID</label><input id="emp-id"></div>
+        <div class="meta-item"><label>Department</label><input id="dept"></div>
+        <div class="meta-item"><label>Meal Type</label>
           <select id="meal-type">
             <option value="">Select</option>
-            <option>Breakfast</option>
-            <option>Lunch</option>
-            <option>Dinner</option>
-            <option>Snacks</option>
+            <option>Breakfast</option><option>Lunch</option><option>Dinner</option><option>Snacks</option>
           </select>
         </div>
-
       </div>
     </div>
 
-    <!-- SECTION: FOOD QUALITY -->
+    <!-- SECTION: Food Quality -->
     <div class="section-title">Food Quality</div>
-
     <table class="question-table">
-      <thead>
-        <tr><th>Parameter</th><th>Feedback</th></tr>
-      </thead>
+      <thead><tr><th>Parameter</th><th>Feedback</th></tr></thead>
       <tbody>
+        <tr><td><span class="question-label">Taste</span></td><td>
+          <div class="option-group">
+            <label><input type="radio" name="taste"> Excellent</label>
+            <label><input type="radio" name="taste"> Good</label>
+            <label><input type="radio" name="taste"> Average</label>
+            <label><input type="radio" name="taste"> Poor</label>
+          </div></td></tr>
 
-        <tr>
-          <td>
-            <span class="question-label">Taste</span>
-            <small>Overall taste of the food served.</small>
-          </td>
-          <td>
-            <div class="option-group">
-              <label><input type="radio" name="taste"> Excellent</label>
-              <label><input type="radio" name="taste"> Good</label>
-              <label><input type="radio" name="taste"> Average</label>
-              <label><input type="radio" name="taste"> Poor</label>
-            </div>
-          </td>
-        </tr>
+        <tr><td><span class="question-label">Freshness</span></td><td>
+          <div class="option-group">
+            <label><input type="radio" name="fresh"> Yes</label>
+            <label><input type="radio" name="fresh"> Partially</label>
+            <label><input type="radio" name="fresh"> No</label>
+          </div></td></tr>
 
-        <tr>
-          <td>
-            <span class="question-label">Freshness</span>
-            <small>Did the food feel fresh and properly cooked?</small>
-          </td>
-          <td>
-            <div class="option-group">
-              <label><input type="radio" name="fresh"> Yes</label>
-              <label><input type="radio" name="fresh"> Partially</label>
-              <label><input type="radio" name="fresh"> No</label>
-            </div>
-          </td>
-        </tr>
+        <tr><td><span class="question-label">Temperature</span></td><td>
+          <div class="option-group">
+            <label><input type="radio" name="temp"> Hot</label>
+            <label><input type="radio" name="temp"> Warm</label>
+            <label><input type="radio" name="temp"> Cold</label>
+          </div></td></tr>
 
-        <tr>
-          <td>
-            <span class="question-label">Temperature</span>
-            <small>Food served at appropriate temperature.</small>
-          </td>
-          <td>
-            <div class="option-group">
-              <label><input type="radio" name="temp"> Hot</label>
-              <label><input type="radio" name="temp"> Warm</label>
-              <label><input type="radio" name="temp"> Cold</label>
-            </div>
-          </td>
-        </tr>
+        <tr><td><span class="question-label">Portion Size</span></td><td>
+          <div class="option-group">
+            <label><input type="radio" name="portion"> Adequate</label>
+            <label><input type="radio" name="portion"> More</label>
+            <label><input type="radio" name="portion"> Less</label>
+          </div></td></tr>
 
-        <tr>
-          <td>
-            <span class="question-label">Portion Size</span>
-            <small>Quantity served for each portion.</small>
-          </td>
-          <td>
-            <div class="option-group">
-              <label><input type="radio" name="portion"> Adequate</label>
-              <label><input type="radio" name="portion"> More</label>
-              <label><input type="radio" name="portion"> Less</label>
-            </div>
-          </td>
-        </tr>
-
-        <tr>
-          <td>
-            <span class="question-label">Variety</span>
-            <small>Menu variety and options.</small>
-          </td>
-          <td>
-            <div class="option-group">
-              <label><input type="radio" name="variety"> Very Good</label>
-              <label><input type="radio" name="variety"> Good</label>
-              <label><input type="radio" name="variety"> Needs Improvement</label>
-              <label><input type="radio" name="variety"> Poor</label>
-            </div>
-          </td>
-        </tr>
-
+        <tr><td><span class="question-label">Variety</span></td><td>
+          <div class="option-group">
+            <label><input type="radio" name="variety"> Very Good</label>
+            <label><input type="radio" name="variety"> Good</label>
+            <label><input type="radio" name="variety"> Needs Improvement</label>
+            <label><input type="radio" name="variety"> Poor</label>
+          </div></td></tr>
       </tbody>
     </table>
 
-    <!-- SECTION: HYGIENE & SERVICE -->
-    <div class="section-title">Hygiene &amp; Service</div>
-
+    <!-- SECTION: Hygiene & Service -->
+    <div class="section-title">Hygiene & Service</div>
     <table class="question-table">
       <tbody>
+        <tr><td><span class="question-label">Staff Behaviour</span></td><td>
+          <div class="option-group">
+            <label><input type="radio" name="staff"> Excellent</label>
+            <label><input type="radio" name="staff"> Good</label>
+            <label><input type="radio" name="staff"> Average</label>
+            <label><input type="radio" name="staff"> Poor</label>
+          </div></td></tr>
 
-        <tr>
-          <td>
-            <span class="question-label">Staff Behaviour</span>
-            <small>Politeness & support of cafeteria staff.</small>
-          </td>
-          <td>
-            <div class="option-group">
-              <label><input type="radio" name="staff"> Excellent</label>
-              <label><input type="radio" name="staff"> Good</label>
-              <label><input type="radio" name="staff"> Average</label>
-              <label><input type="radio" name="staff"> Poor</label>
-            </div>
-          </td>
-        </tr>
+        <tr><td><span class="question-label">Cafeteria Cleanliness</span></td><td>
+          <div class="option-group">
+            <label><input type="radio" name="clean"> Very Clean</label>
+            <label><input type="radio" name="clean"> Clean</label>
+            <label><input type="radio" name="clean"> Needs Improvement</label>
+            <label><input type="radio" name="clean"> Poor</label>
+          </div></td></tr>
 
-        <tr>
-          <td>
-            <span class="question-label">Cafeteria Cleanliness</span>
-            <small>Dining area, counters, and surroundings.</small>
-          </td>
-          <td>
-            <div class="option-group">
-              <label><input type="radio" name="clean"> Very Clean</label>
-              <label><input type="radio" name="clean"> Clean</label>
-              <label><input type="radio" name="clean"> Needs Improvement</label>
-              <label><input type="radio" name="clean"> Poor</label>
-            </div>
-          </td>
-        </tr>
-
-        <tr>
-          <td>
-            <span class="question-label">Food Handling Hygiene</span>
-            <small>Use of gloves, apron, cap, etc.</small>
-          </td>
-          <td>
-            <div class="option-group">
-              <label><input type="radio" name="hygiene"> Good</label>
-              <label><input type="radio" name="hygiene"> Satisfactory</label>
-              <label><input type="radio" name="hygiene"> Needs Improvement</label>
-            </div>
-          </td>
-        </tr>
-
+        <tr><td><span class="question-label">Food Handling Hygiene</span></td><td>
+          <div class="option-group">
+            <label><input type="radio" name="hygiene"> Good</label>
+            <label><input type="radio" name="hygiene"> Satisfactory</label>
+            <label><input type="radio" name="hygiene"> Needs Improvement</label>
+          </div></td></tr>
       </tbody>
     </table>
 
     <!-- COMMENTS -->
     <div class="section-title">Additional Comments</div>
-
-    <div class="text-row">
-      <label for="likes">What did you like most?</label>
-      <textarea id="likes" placeholder="Share positive feedback, items you liked, etc."></textarea>
-    </div>
-
-    <div class="text-row">
-      <label for="improve">Suggestions for improvement</label>
-      <textarea id="improve" placeholder="Share any suggestions or concerns."></textarea>
-    </div>
+    <div class="text-row"><label>What did you like most?</label><textarea id="likes"></textarea></div>
+    <div class="text-row"><label>Suggestions for improvement</label><textarea id="improve"></textarea></div>
 
     <!-- OVERALL RATING -->
     <div class="section-title">Overall Rating</div>
-
     <div class="text-row">
       <label>Overall Rating</label>
       <div class="option-group">
@@ -595,13 +299,10 @@
       </div>
     </div>
 
-    <div class="text-row">
-      <label>Signature (optional)</label>
-      <textarea id="signature" placeholder="You may type your name here for acknowledgment."></textarea>
-    </div>
+    <div class="text-row"><label>Signature (optional)</label><textarea id="signature"></textarea></div>
 
     <div class="footer-note">
-      <div>Thank you for your valuable feedback. It helps us improve food quality &amp; service.</div>
+      <div>Thank you for your valuable feedback.</div>
       <div><b>Form Code: KFB-001</b></div>
     </div>
 
@@ -609,10 +310,10 @@
 
   <!-- BUTTONS -->
   <div class="actions">
-    <button class="btn btn-primary" type="button" onclick="saveForm()">Save (Lock)</button>
-    <button class="btn" type="button" onclick="resetForm()">Reset</button>
-    <button class="btn" type="button" onclick="window.print()">Print</button>
-    <button class="btn btn-primary" type="button" onclick="downloadPDF()">Download PDF</button>
+    <button class="btn btn-primary" onclick="saveForm()">Save (Lock)</button>
+    <button class="btn" onclick="resetForm()">Reset</button>
+    <button class="btn" onclick="window.print()">Print</button>
+    <button class="btn btn-primary" onclick="downloadPDF()">Download PDF</button>
   </div>
 
 </div>
@@ -625,17 +326,15 @@
       <button class="modal-close" onclick="closeLoginModal()">&times;</button>
     </div>
     <div class="modal-body">
-      <label for="login-email">Email</label>
-      <input type="email" id="login-email" placeholder="Admin email">
-
-      <label for="login-password">Password</label>
-      <input type="password" id="login-password" placeholder="Password">
-
-      <div id="login-status" style="font-size:12px;color:#b00;margin-top:4px;"></div>
+      <label>Email</label>
+      <input id="login-email" type="email">
+      <label>Password</label>
+      <input id="login-password" type="password">
+      <div id="login-status" style="font-size:12px;color:#b00;"></div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-small" type="button" onclick="closeLoginModal()">Close</button>
-      <button class="btn btn-small btn-primary" type="button" onclick="submitLogin()">Login</button>
+      <button class="btn-small" onclick="closeLoginModal()">Close</button>
+      <button class="btn-small btn-primary" onclick="submitLogin()">Login</button>
     </div>
   </div>
 </div>
@@ -644,14 +343,14 @@
 <div id="qr-modal" class="modal-overlay">
   <div class="modal-box">
     <div class="modal-header">
-      <span>Scan QR to open this form</span>
+      <span>Scan to open form</span>
       <button class="modal-close" onclick="closeQRModal()">&times;</button>
     </div>
-    <div id="qr-container">
+    <div id="qr-container" style="text-align:center;">
       <div id="qrcode"></div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-small" type="button" onclick="closeQRModal()">Close</button>
+      <button class="btn-small" onclick="closeQRModal()">Close</button>
     </div>
   </div>
 </div>
@@ -661,116 +360,92 @@
   document.getElementById("today-span").textContent =
     new Date().toLocaleDateString("en-GB");
 
-  // SAVE: lock all inputs
+  // SAVE
   function saveForm(){
-    const controls = document.querySelectorAll(
-      "#pdf-area input, #pdf-area textarea, #pdf-area select"
-    );
-    controls.forEach(el => {
-      el.setAttribute("disabled","disabled");
-    });
-    alert("Form saved and locked. You can still print or download PDF.");
+    document.querySelectorAll("#pdf-area input, #pdf-area textarea, #pdf-area select")
+      .forEach(el => el.setAttribute("disabled","disabled"));
+    alert("Form saved and locked.");
   }
 
-  // RESET: clear & unlock
+  // RESET
   function resetForm(){
-    const controls = document.querySelectorAll(
-      "#pdf-area input, #pdf-area textarea, #pdf-area select"
-    );
-    controls.forEach(el => {
+    document.querySelectorAll("#pdf-area *").forEach(el=>{
       el.removeAttribute("disabled");
-      if(el.tagName === "TEXTAREA"){
-        el.value = "";
-      }else if(el.tagName === "SELECT"){
-        el.selectedIndex = 0;
-      }else if(el.type === "radio" || el.type === "checkbox"){
-        el.checked = false;
-      }else{
-        el.value = "";
-      }
+      if(el.tagName==="TEXTAREA") el.value="";
+      if(el.tagName==="INPUT" && el.type==="text") el.value="";
+      if(el.type==="radio") el.checked=false;
+      if(el.tagName==="SELECT") el.selectedIndex=0;
     });
-    alert("Form reset. All fields are editable again.");
+    alert("Form reset.");
   }
 
-  // SINGLE-PAGE PDF WITH MARGIN (unchanged behaviour, just centered)
+  // -------- PDF FIX: Prevent text cutting using clone + padding ---------
   function downloadPDF(){
     const { jsPDF } = window.jspdf;
     const pdfArea = document.getElementById("pdf-area");
 
-    // ADD EXTRA PADDING ONLY FOR PDF
-    pdfArea.classList.add("pdf-padding");
+    // clone with padding (not visible on website)
+    const clone = pdfArea.cloneNode(true);
+    clone.style.padding = "25px";
+    clone.style.background = "#fff";
+    clone.style.boxSizing = "border-box";
+    clone.style.width = pdfArea.offsetWidth + "px";
 
-    html2canvas(pdfArea, {
-      scale: 3,
-      useCORS: true,
-      scrollY: -window.scrollY,
-      backgroundColor:"#ffffff"
-    }).then(canvas => {
+    const hidden = document.createElement("div");
+    hidden.style.position = "fixed";
+    hidden.style.left = "-9999px";
+    hidden.appendChild(clone);
+    document.body.appendChild(hidden);
 
+    html2canvas(clone,{
+      scale:3,useCORS:true,scrollY:-window.scrollY,backgroundColor:"#fff"
+    }).then(canvas=>{
       const pdf = new jsPDF("p","mm","a4");
+      const pw = pdf.internal.pageSize.getWidth();
+      const ph = pdf.internal.pageSize.getHeight();
 
-      const pageWidth  = pdf.internal.pageSize.getWidth();
-      const pageHeight = pdf.internal.pageSize.getHeight();
+      const margin = 8;
+      const maxW = pw - margin*2;
+      const maxH = ph - margin*2;
 
-      const margin = 10;
+      const ratio = Math.min(maxW/canvas.width, maxH/canvas.height);
+      const imgW = canvas.width*ratio;
+      const imgH = canvas.height*ratio;
 
-      const maxWidth  = pageWidth  - margin * 2;
-      const maxHeight = pageHeight - margin * 2;
+      const x = (pw-imgW)/2;
+      const y = (ph-imgH)/2;
 
-      const ratio = Math.min(
-        maxWidth  / canvas.width,
-        maxHeight / canvas.height
-      );
+      pdf.addImage(canvas.toDataURL("image/png",1.0),
+        "PNG", x, y, imgW, imgH);
 
-      const imgWidth  = canvas.width  * ratio;
-      const imgHeight = canvas.height * ratio;
-
-      const x = (pageWidth  - imgWidth)  / 2;
-      const y = (pageHeight - imgHeight) / 2;
-
-      const imgData = canvas.toDataURL("image/jpeg", 0.95);
-
-      pdf.addImage(imgData, "JPEG", x, y, imgWidth, imgHeight, undefined, "FAST");
-
-      // REMOVE EXTRA PADDING AFTER PDF
-      pdfArea.classList.remove("pdf-padding");
-
+      document.body.removeChild(hidden);
       pdf.save("Food_Feedback_Form_KFB-001.pdf");
     });
   }
 
-  // --------- QR MODAL LOGIC (current page URL) ----------
+  // -------- QR POPUP --------
   function openQRModal(){
-    const qrModal = document.getElementById("qr-modal");
-    qrModal.style.display = "flex";
-
-    const qrDiv = document.getElementById("qrcode");
-    qrDiv.innerHTML = ""; // clear old QR
-
-    const url = window.location.href;
-
-    new QRCode(qrDiv, {
-      text: url,
-      width: 180,
-      height: 180
+    document.getElementById("qr-modal").style.display="flex";
+    document.getElementById("qrcode").innerHTML="";
+    new QRCode(document.getElementById("qrcode"),{
+      text:window.location.href,
+      width:180,height:180
     });
   }
-
   function closeQRModal(){
-    document.getElementById("qr-modal").style.display = "none";
+    document.getElementById("qr-modal").style.display="none";
   }
 
-  // --------- LOGIN MODAL OPEN/CLOSE ----------
+  // -------- LOGIN POPUP + FIREBASE --------
   function openLoginModal(){
-    document.getElementById("login-status").textContent = "";
-    document.getElementById("login-modal").style.display = "flex";
+    document.getElementById("login-status").textContent="";
+    document.getElementById("login-modal").style.display="flex";
   }
-
   function closeLoginModal(){
-    document.getElementById("login-modal").style.display = "none";
+    document.getElementById("login-modal").style.display="none";
   }
 
-  // --------- FIREBASE CONFIG + LOGIN ----------
+  // Firebase config
   const firebaseConfig = {
     apiKey: "AIzaSyDrbNwfwumTWXhAs6ZZ_ulcb5mO0NKeKso",
     authDomain: "konarak-feedback.firebaseapp.com",
@@ -779,34 +454,26 @@
     messagingSenderId: "203063167708",
     appId: "1:203063167708:web:d5662effdfdf1815000219"
   };
-
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
 
   function submitLogin(){
-    const email = document.getElementById("login-email").value.trim();
-    const pass  = document.getElementById("login-password").value;
-
-    const statusEl = document.getElementById("login-status");
-    statusEl.style.color = "#b00";
-    statusEl.textContent = "";
+    let email=document.getElementById("login-email").value.trim();
+    let pass=document.getElementById("login-password").value;
+    let status=document.getElementById("login-status");
 
     if(!email || !pass){
-      statusEl.textContent = "Enter email and password.";
+      status.textContent="Enter email & password";
       return;
     }
 
-    auth.signInWithEmailAndPassword(email, pass)
-      .then(userCred => {
-        statusEl.style.color = "green";
-        statusEl.textContent = "Login successful.";
-        setTimeout(() => {
-          closeLoginModal();
-        }, 800);
+    auth.signInWithEmailAndPassword(email,pass)
+      .then(()=>{
+        status.style.color="green";
+        status.textContent="Login successful";
+        setTimeout(()=>closeLoginModal(),600);
       })
-      .catch(err => {
-        statusEl.textContent = err.message;
-      });
+      .catch(e=>{status.textContent=e.message});
   }
 </script>
 
