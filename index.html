@@ -1,176 +1,813 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Konarak HR System</title>
+  <meta charset="utf-8">
+  <title>CTS Cafeteria - Food Feedback Form</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<style>
-body { font-family: Arial; margin: 0; background:#f4f4f4; }
-header { background:#0066ff; padding:15px; color:#fff; font-size:20px; text-align:center; }
-#container { display:flex; min-height:100vh; }
-#menu { width:230px; background:#fff; padding:20px; box-shadow:2px 0 6px rgba(0,0,0,0.1); }
-#menu button { width:100%; padding:12px; margin-bottom:12px; border:1px solid #ccc; border-radius:6px; background:#eee; cursor:pointer; }
-#content { flex:1; padding:20px; }
-.card { background:#fff; padding:20px; border-radius:8px; margin-bottom:20px; box-shadow:0 2px 6px rgba(0,0,0,0.1); }
-input, select { width:100%; padding:10px; margin-top:10px; border:1px solid #ccc; border-radius:6px; }
-button.primary { background:#0066ff; color:#fff; border:none; padding:12px; margin-top:15px; width:100%; border-radius:6px; cursor:pointer; }
-table { width:100%; border-collapse:collapse; margin-top:15px; }
-th, td { border:1px solid #ddd; padding:10px; }
-th { background:#eee; }
-@media(max-width:768px){
-  #container{ flex-direction:column; }
-  #menu{ width:100%; box-shadow:none; border-bottom:1px solid #ddd; }
-}
-</style>
+  <!-- PDF LIBRARIES -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <!-- QR CODE LIB -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <!-- FIREBASE LIBS -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-auth-compat.js"></script>
+
+  <style>
+    :root{
+      --accent:#f28c2b;          /* KONARAK ORANGE */
+      --accent-soft:#fff3e6;
+      --border:#000;
+      --bg:#f4f4f4;
+      --text:#111;
+      --muted:#666;
+    }
+
+    *{box-sizing:border-box;}
+
+    body{
+      margin:0;
+      font-family: Arial, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      padding:12px;
+    }
+
+    .wrapper{
+      max-width:1100px;
+      margin:0 auto;
+    }
+
+    .top-bar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:10px;
+      font-size:13px;
+      color:var(--muted);
+    }
+
+    .sheet{
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:10px;
+      padding:20px;
+      box-shadow:0 2px 6px rgba(0,0,0,0.08);
+    }
+
+    /* HEADER BOX */
+    .header-box{
+      border:1px solid var(--border);
+      border-radius:10px;
+      padding:14px;
+      margin-bottom:14px;
+    }
+
+    .header-row{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+
+    .logo-box{
+      flex:0 0 auto;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      width:70px;
+      height:70px;
+      border:1px solid var(--border);
+      border-radius:8px;
+      overflow:hidden;
+    }
+
+    .logo-box img{
+      max-width:100%;
+      max-height:100%;
+      object-fit:contain;
+    }
+
+    .title-block{flex:1;}
+
+    .company-name{
+      margin:0;
+      font-size:18px;
+      font-weight:bold;
+      text-transform:uppercase;
+      color:var(--accent);
+    }
+
+    .sub-title{
+      margin:2px 0 6px;
+      font-size:14px;
+      font-weight:bold;
+      color:#333;
+    }
+
+    .form-title{
+      margin:0;
+      font-size:16px;
+      font-weight:bold;
+      text-align:center;
+      text-transform:uppercase;
+      border-top:1px solid #000;
+      margin-top:6px;
+      padding-top:6px;
+      color:var(--accent);
+    }
+
+    /* META INFO GRID */
+    .meta-row{
+      display:grid;
+      grid-template-columns:repeat(4, minmax(0,1fr));
+      gap:10px;
+      margin-top:10px;
+      font-size:12px;
+    }
+
+    .meta-item label{
+      display:block;
+      font-weight:bold;
+      margin-bottom:2px;
+    }
+
+    .meta-item input,
+    .meta-item select{
+      width:100%;
+      padding:6px;
+      border:1px solid #000;
+      border-radius:4px;
+      font-size:12px;
+    }
+
+    /* SECTION TITLE */
+    .section-title{
+      margin:16px 0 6px;
+      padding:6px 8px;
+      font-weight:bold;
+      font-size:13px;
+      background:var(--accent-soft);
+      border-left:4px solid var(--accent);
+      text-transform:uppercase;
+    }
+
+    /* TABLE STYLING */
+    .question-table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:12px;
+      margin-bottom:12px;
+    }
+
+    .question-table th,
+    .question-table td{
+      border:1px solid #000;
+      padding:6px;
+      vertical-align:top;
+    }
+
+    .question-table th{
+      background:#fff7ef;
+      font-weight:bold;
+      text-align:center;
+    }
+
+    .question-label{
+      font-weight:bold;
+      display:block;
+      margin-bottom:3px;
+    }
+
+    .option-group{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px 16px;
+      margin-top:4px;
+    }
+
+    .option-group label{
+      display:flex;
+      align-items:center;
+      gap:4px;
+    }
+
+    /* TEXTAREAS */
+    .text-row{
+      display:flex;
+      gap:8px;
+      font-size:12px;
+      margin-bottom:10px;
+    }
+
+    .text-row label{
+      flex:0 0 150px;
+      font-weight:bold;
+      padding-top:4px;
+    }
+
+    .text-row textarea{
+      flex:1;
+      min-height:60px;
+      border:1px solid #000;
+      border-radius:4px;
+      padding:6px;
+    }
+
+    /* FOOTER */
+    .footer-note{
+      border-top:1px solid #000;
+      margin-top:10px;
+      padding-top:6px;
+      font-size:11px;
+      display:flex;
+      justify-content:space-between;
+    }
+
+    /* BUTTONS */
+    .actions{
+      display:flex;
+      justify-content:center;
+      margin-top:14px;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      padding:8px 20px;
+      border-radius:999px;
+      cursor:pointer;
+      border:1px solid var(--accent);
+      font-weight:600;
+      font-size:13px;
+      background:#fff;
+      color:var(--accent);
+    }
+
+    .btn-primary{
+      background:var(--accent);
+      color:#fff;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width:768px){
+      .meta-row{grid-template-columns:repeat(2,1fr);}
+      .text-row{flex-direction:column;}
+      .text-row label{flex:none;}
+      .footer-note{flex-direction:column;gap:4px;}
+    }
+    @media (max-width:480px){
+      .meta-row{grid-template-columns:1fr;}
+    }
+
+    /* EXTRA PADDING ONLY FOR PDF (does NOT change website) */
+    .pdf-padding input,
+    .pdf-padding textarea,
+    .pdf-padding select {
+      padding:10px !important;
+    }
+
+    /* TOP SMALL BUTTONS ROW (Login & QR) */
+    .top-controls{
+      display:flex;
+      justify-content:flex-end;
+      gap:8px;
+      margin-bottom:8px;
+    }
+
+    .top-controls .btn-small{
+      padding:5px 14px;
+      font-size:12px;
+    }
+
+    /* SIMPLE MODAL STYLES */
+    .modal-overlay{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.45);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:9999;
+    }
+
+    .modal-box{
+      background:#fff;
+      border-radius:10px;
+      padding:16px 18px;
+      max-width:340px;
+      width:90%;
+      box-shadow:0 4px 18px rgba(0,0,0,0.2);
+      font-size:14px;
+    }
+
+    .modal-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:10px;
+      font-weight:bold;
+    }
+
+    .modal-close{
+      border:none;
+      background:transparent;
+      font-size:18px;
+      cursor:pointer;
+      line-height:1;
+    }
+
+    .modal-body label{
+      display:block;
+      margin-bottom:4px;
+      font-size:13px;
+      font-weight:bold;
+    }
+
+    .modal-body input{
+      width:100%;
+      padding:6px 8px;
+      margin-bottom:8px;
+      border-radius:6px;
+      border:1px solid #ccc;
+      font-size:13px;
+    }
+
+    .modal-footer{
+      display:flex;
+      justify-content:flex-end;
+      gap:8px;
+      margin-top:6px;
+    }
+
+    #qr-container{
+      display:flex;
+      justify-content:center;
+      margin-top:8px;
+    }
+  </style>
 </head>
 
 <body>
+<div class="wrapper">
 
-<header>Konarak F&B — HR System</header>
-
-<div id="container">
-
-<div id="menu">
-  <button onclick="showPage('dashboard')">Dashboard</button>
-  <button onclick="showPage('employees')">Employees</button>
-</div>
-
-<div id="content">
-
-<div id="dashboard" class="page">
-  <div class="card">
-    <h2>Dashboard</h2>
-    <p>Total Employees: <b id="dash_total">0</b></p>
-  </div>
-</div>
-
-<div id="employees" class="page" style="display:none">
-  <div class="card">
-    <h2>Add Employee</h2>
-
-    <input id="emp_emp_code" placeholder="Employee Code">
-    <input id="emp_first_name" placeholder="First Name">
-    <input id="emp_last_name" placeholder="Last Name">
-    <input id="emp_email" placeholder="Email">
-    <input id="emp_phone" placeholder="Phone">
-    <input id="emp_dob" type="date">
-    <input id="emp_joining_date" type="date">
-    <input id="emp_relieving_date" type="date">
-
-    <select id="emp_department">
-      <option value="">Select Department</option>
-      <option>HR</option>
-      <option>Kitchen</option>
-      <option>Billing</option>
-      <option>Service</option>
-      <option>Store</option>
-    </select>
-
-    <input id="emp_role" placeholder="Role">
-
-    <select id="emp_status">
-      <option value="active">Active</option>
-      <option value="inactive">Inactive</option>
-    </select>
-
-    <button class="primary" onclick="saveEmployee()">Save Employee</button>
+  <!-- TOP CONTROLS: LOGIN & QR BUTTONS -->
+  <div class="top-controls">
+    <button class="btn btn-small" type="button" onclick="openLoginModal()">Login</button>
+    <button class="btn btn-small" type="button" onclick="openQRModal()">QR</button>
   </div>
 
-  <div class="card">
-    <h2>Employees</h2>
-    <table>
+  <div class="top-bar">
+    <div>Food Feedback Form</div>
+    <div>Date: <span id="today-span"></span></div>
+  </div>
+
+  <div id="pdf-area" class="sheet">
+
+    <!-- HEADER -->
+    <div class="header-box">
+      <div class="header-row">
+        <div class="logo-box">
+          <img src="logo1.png" alt="Logo">
+        </div>
+        <div class="title-block">
+          <h1 class="company-name">CTS CAFETERIA</h1>
+          <p class="sub-title">Operated by Konarak Food & Beverages</p>
+          <p class="form-title">FOOD FEEDBACK FORM</p>
+        </div>
+      </div>
+
+      <!-- META FIELDS -->
+      <div class="meta-row">
+
+        <div class="meta-item">
+          <label for="food-item">Food Item Name</label>
+          <input id="food-item" type="text" placeholder="Item name">
+        </div>
+
+        <div class="meta-item">
+          <label for="building">Building</label>
+          <input id="building" type="text" placeholder="Building">
+        </div>
+
+        <div class="meta-item">
+          <label for="floor">Floor</label>
+          <input id="floor" type="text" placeholder="Floor">
+        </div>
+
+        <div class="meta-item">
+          <label for="counter">Counter</label>
+          <input id="counter" type="text" placeholder="Counter">
+        </div>
+
+        <div class="meta-item">
+          <label for="emp-name">Employee Name</label>
+          <input id="emp-name" type="text" placeholder="Enter your name">
+        </div>
+
+        <div class="meta-item">
+          <label for="emp-id">Employee ID</label>
+          <input id="emp-id" type="text" placeholder="Badge / ID No">
+        </div>
+
+        <div class="meta-item">
+          <label for="dept">Department</label>
+          <input id="dept" type="text" placeholder="Department / Project">
+        </div>
+
+        <div class="meta-item">
+          <label for="meal-type">Meal Type</label>
+          <select id="meal-type">
+            <option value="">Select</option>
+            <option>Breakfast</option>
+            <option>Lunch</option>
+            <option>Dinner</option>
+            <option>Snacks</option>
+          </select>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SECTION: FOOD QUALITY -->
+    <div class="section-title">Food Quality</div>
+
+    <table class="question-table">
       <thead>
-        <tr><th>ID</th><th>Code</th><th>Name</th><th>Phone</th><th>Dept</th></tr>
+        <tr><th>Parameter</th><th>Feedback</th></tr>
       </thead>
-      <tbody id="emp_table"></tbody>
+      <tbody>
+
+        <tr>
+          <td>
+            <span class="question-label">Taste</span>
+            <small>Overall taste of the food served.</small>
+          </td>
+          <td>
+            <div class="option-group">
+              <label><input type="radio" name="taste"> Excellent</label>
+              <label><input type="radio" name="taste"> Good</label>
+              <label><input type="radio" name="taste"> Average</label>
+              <label><input type="radio" name="taste"> Poor</label>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <span class="question-label">Freshness</span>
+            <small>Did the food feel fresh and properly cooked?</small>
+          </td>
+          <td>
+            <div class="option-group">
+              <label><input type="radio" name="fresh"> Yes</label>
+              <label><input type="radio" name="fresh"> Partially</label>
+              <label><input type="radio" name="fresh"> No</label>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <span class="question-label">Temperature</span>
+            <small>Food served at appropriate temperature.</small>
+          </td>
+          <td>
+            <div class="option-group">
+              <label><input type="radio" name="temp"> Hot</label>
+              <label><input type="radio" name="temp"> Warm</label>
+              <label><input type="radio" name="temp"> Cold</label>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <span class="question-label">Portion Size</span>
+            <small>Quantity served for each portion.</small>
+          </td>
+          <td>
+            <div class="option-group">
+              <label><input type="radio" name="portion"> Adequate</label>
+              <label><input type="radio" name="portion"> More</label>
+              <label><input type="radio" name="portion"> Less</label>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <span class="question-label">Variety</span>
+            <small>Menu variety and options.</small>
+          </td>
+          <td>
+            <div class="option-group">
+              <label><input type="radio" name="variety"> Very Good</label>
+              <label><input type="radio" name="variety"> Good</label>
+              <label><input type="radio" name="variety"> Needs Improvement</label>
+              <label><input type="radio" name="variety"> Poor</label>
+            </div>
+          </td>
+        </tr>
+
+      </tbody>
     </table>
+
+    <!-- SECTION: HYGIENE & SERVICE -->
+    <div class="section-title">Hygiene &amp; Service</div>
+
+    <table class="question-table">
+      <tbody>
+
+        <tr>
+          <td>
+            <span class="question-label">Staff Behaviour</span>
+            <small>Politeness & support of cafeteria staff.</small>
+          </td>
+          <td>
+            <div class="option-group">
+              <label><input type="radio" name="staff"> Excellent</label>
+              <label><input type="radio" name="staff"> Good</label>
+              <label><input type="radio" name="staff"> Average</label>
+              <label><input type="radio" name="staff"> Poor</label>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <span class="question-label">Cafeteria Cleanliness</span>
+            <small>Dining area, counters, and surroundings.</small>
+          </td>
+          <td>
+            <div class="option-group">
+              <label><input type="radio" name="clean"> Very Clean</label>
+              <label><input type="radio" name="clean"> Clean</label>
+              <label><input type="radio" name="clean"> Needs Improvement</label>
+              <label><input type="radio" name="clean"> Poor</label>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <span class="question-label">Food Handling Hygiene</span>
+            <small>Use of gloves, apron, cap, etc.</small>
+          </td>
+          <td>
+            <div class="option-group">
+              <label><input type="radio" name="hygiene"> Good</label>
+              <label><input type="radio" name="hygiene"> Satisfactory</label>
+              <label><input type="radio" name="hygiene"> Needs Improvement</label>
+            </div>
+          </td>
+        </tr>
+
+      </tbody>
+    </table>
+
+    <!-- COMMENTS -->
+    <div class="section-title">Additional Comments</div>
+
+    <div class="text-row">
+      <label for="likes">What did you like most?</label>
+      <textarea id="likes" placeholder="Share positive feedback, items you liked, etc."></textarea>
+    </div>
+
+    <div class="text-row">
+      <label for="improve">Suggestions for improvement</label>
+      <textarea id="improve" placeholder="Share any suggestions or concerns."></textarea>
+    </div>
+
+    <!-- OVERALL RATING -->
+    <div class="section-title">Overall Rating</div>
+
+    <div class="text-row">
+      <label>Overall Rating</label>
+      <div class="option-group">
+        <label><input type="radio" name="overall"> 1</label>
+        <label><input type="radio" name="overall"> 2</label>
+        <label><input type="radio" name="overall"> 3</label>
+        <label><input type="radio" name="overall"> 4</label>
+        <label><input type="radio" name="overall"> 5</label>
+      </div>
+    </div>
+
+    <div class="text-row">
+      <label>Signature (optional)</label>
+      <textarea id="signature" placeholder="You may type your name here for acknowledgment."></textarea>
+    </div>
+
+    <div class="footer-note">
+      <div>Thank you for your valuable feedback. It helps us improve food quality &amp; service.</div>
+      <div><b>Form Code: KFB-001</b></div>
+    </div>
+
+  </div>
+
+  <!-- BUTTONS -->
+  <div class="actions">
+    <button class="btn btn-primary" type="button" onclick="saveForm()">Save (Lock)</button>
+    <button class="btn" type="button" onclick="resetForm()">Reset</button>
+    <button class="btn" type="button" onclick="window.print()">Print</button>
+    <button class="btn btn-primary" type="button" onclick="downloadPDF()">Download PDF</button>
+  </div>
+
+</div>
+
+<!-- LOGIN MODAL -->
+<div id="login-modal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span>Admin Login</span>
+      <button class="modal-close" onclick="closeLoginModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <label for="login-email">Email</label>
+      <input type="email" id="login-email" placeholder="Admin email">
+
+      <label for="login-password">Password</label>
+      <input type="password" id="login-password" placeholder="Password">
+
+      <div id="login-status" style="font-size:12px;color:#b00;margin-top:4px;"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-small" type="button" onclick="closeLoginModal()">Close</button>
+      <button class="btn btn-small btn-primary" type="button" onclick="submitLogin()">Login</button>
+    </div>
   </div>
 </div>
 
-</div>
+<!-- QR MODAL -->
+<div id="qr-modal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span>Scan QR to open this form</span>
+      <button class="modal-close" onclick="closeQRModal()">&times;</button>
+    </div>
+    <div id="qr-container">
+      <div id="qrcode"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-small" type="button" onclick="closeQRModal()">Close</button>
+    </div>
+  </div>
 </div>
 
 <script>
-/* ---------------- CONFIG ---------------- */
-const API_URL = "https://script.google.com/macros/s/AKfycbwi_M1k9dLbD-e7s8fOntoHm7paC9_VD0cvPQqu1_dgtxq2HWzm6vv6p-pyTp0v_IvJ/exec";
-const API_KEY = "konarak123456789secret";
+  // Set today's date
+  document.getElementById("today-span").textContent =
+    new Date().toLocaleDateString("en-GB");
 
-/* ---------------- PAGE SWITCH ---------------- */
-function showPage(p){
-  document.querySelectorAll(".page").forEach(x=>x.style.display="none");
-  document.getElementById(p).style.display="block";
-  if(p==="employees") loadEmployees();
-  if(p==="dashboard") loadDashboard();
-}
+  // SAVE: lock all inputs
+  function saveForm(){
+    const controls = document.querySelectorAll(
+      "#pdf-area input, #pdf-area textarea, #pdf-area select"
+    );
+    controls.forEach(el => {
+      el.setAttribute("disabled","disabled");
+    });
+    alert("Form saved and locked. You can still print or download PDF.");
+  }
 
-/* ---------------- SAVE EMPLOYEE ---------------- */
-async function saveEmployee(){
-  const body={
-    action:"create_employee",
-    key:API_KEY,
-    emp_code:emp_emp_code.value,
-    first_name:emp_first_name.value,
-    last_name:emp_last_name.value,
-    email:emp_email.value,
-    phone:emp_phone.value,
-    dob:emp_dob.value,
-    joining_date:emp_joining_date.value,
-    relieving_date:emp_relieving_date.value,
-    department:emp_department.value,
-    role:emp_role.value,
-    status:emp_status.value
+  // RESET: clear & unlock
+  function resetForm(){
+    const controls = document.querySelectorAll(
+      "#pdf-area input, #pdf-area textarea, #pdf-area select"
+    );
+    controls.forEach(el => {
+      el.removeAttribute("disabled");
+      if(el.tagName === "TEXTAREA"){
+        el.value = "";
+      }else if(el.tagName === "SELECT"){
+        el.selectedIndex = 0;
+      }else if(el.type === "radio" || el.type === "checkbox"){
+        el.checked = false;
+      }else{
+        el.value = "";
+      }
+    });
+    alert("Form reset. All fields are editable again.");
+  }
+
+  // SINGLE-PAGE PDF WITH MARGIN (unchanged behaviour, just centered)
+  function downloadPDF(){
+    const { jsPDF } = window.jspdf;
+    const pdfArea = document.getElementById("pdf-area");
+
+    // ADD EXTRA PADDING ONLY FOR PDF
+    pdfArea.classList.add("pdf-padding");
+
+    html2canvas(pdfArea, {
+      scale: 3,
+      useCORS: true,
+      scrollY: -window.scrollY,
+      backgroundColor:"#ffffff"
+    }).then(canvas => {
+
+      const pdf = new jsPDF("p","mm","a4");
+
+      const pageWidth  = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+
+      const margin = 10;
+
+      const maxWidth  = pageWidth  - margin * 2;
+      const maxHeight = pageHeight - margin * 2;
+
+      const ratio = Math.min(
+        maxWidth  / canvas.width,
+        maxHeight / canvas.height
+      );
+
+      const imgWidth  = canvas.width  * ratio;
+      const imgHeight = canvas.height * ratio;
+
+      const x = (pageWidth  - imgWidth)  / 2;
+      const y = (pageHeight - imgHeight) / 2;
+
+      const imgData = canvas.toDataURL("image/jpeg", 0.95);
+
+      pdf.addImage(imgData, "JPEG", x, y, imgWidth, imgHeight, undefined, "FAST");
+
+      // REMOVE EXTRA PADDING AFTER PDF
+      pdfArea.classList.remove("pdf-padding");
+
+      pdf.save("Food_Feedback_Form_KFB-001.pdf");
+    });
+  }
+
+  // --------- QR MODAL LOGIC (current page URL) ----------
+  function openQRModal(){
+    const qrModal = document.getElementById("qr-modal");
+    qrModal.style.display = "flex";
+
+    const qrDiv = document.getElementById("qrcode");
+    qrDiv.innerHTML = ""; // clear old QR
+
+    const url = window.location.href;
+
+    new QRCode(qrDiv, {
+      text: url,
+      width: 180,
+      height: 180
+    });
+  }
+
+  function closeQRModal(){
+    document.getElementById("qr-modal").style.display = "none";
+  }
+
+  // --------- LOGIN MODAL OPEN/CLOSE ----------
+  function openLoginModal(){
+    document.getElementById("login-status").textContent = "";
+    document.getElementById("login-modal").style.display = "flex";
+  }
+
+  function closeLoginModal(){
+    document.getElementById("login-modal").style.display = "none";
+  }
+
+  // --------- FIREBASE CONFIG + LOGIN ----------
+  const firebaseConfig = {
+    apiKey: "AIzaSyDrbNwfwumTWXhAs6ZZ_ulcb5mO0NKeKso",
+    authDomain: "konarak-feedback.firebaseapp.com",
+    projectId: "konarak-feedback",
+    storageBucket: "konarak-feedback.firebasestorage.app",
+    messagingSenderId: "203063167708",
+    appId: "1:203063167708:web:d5662effdfdf1815000219"
   };
 
-  try{
-    const r = await fetch(API_URL,{
-      method:"POST",
-      headers:{ "Content-Type":"application/json" },
-      body:JSON.stringify(body)
-    });
-    const d = await r.json();
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
 
-    if(d.success){
-      alert("Employee Added!");
-      loadEmployees();
-    }else{
-      alert("Error: "+d.error);
+  function submitLogin(){
+    const email = document.getElementById("login-email").value.trim();
+    const pass  = document.getElementById("login-password").value;
+
+    const statusEl = document.getElementById("login-status");
+    statusEl.style.color = "#b00";
+    statusEl.textContent = "";
+
+    if(!email || !pass){
+      statusEl.textContent = "Enter email and password.";
+      return;
     }
-  }catch(e){
-    alert("Fetch error: "+e);
+
+    auth.signInWithEmailAndPassword(email, pass)
+      .then(userCred => {
+        statusEl.style.color = "green";
+        statusEl.textContent = "Login successful.";
+        setTimeout(() => {
+          closeLoginModal();
+        }, 800);
+      })
+      .catch(err => {
+        statusEl.textContent = err.message;
+      });
   }
-}
-
-/* ---------------- LIST EMPLOYEES ---------------- */
-async function loadEmployees(){
-  const r = await fetch(`${API_URL}?action=list_employees&key=${API_KEY}`);
-  const d = await r.json();
-
-  const tbody = document.getElementById("emp_table");
-  tbody.innerHTML="";
-
-  if(d.success){
-    d.data.forEach(emp=>{
-      tbody.innerHTML += `
-      <tr>
-        <td>${emp.id}</td>
-        <td>${emp.emp_code}</td>
-        <td>${emp.first_name} ${emp.last_name}</td>
-        <td>${emp.phone}</td>
-        <td>${emp.department}</td>
-      </tr>`;
-    });
-  }
-}
-
-/* ---------------- DASHBOARD ---------------- */
-async function loadDashboard(){
-  const r = await fetch(`${API_URL}?action=list_employees&key=${API_KEY}`);
-  const d = await r.json();
-  if(d.success){
-    dash_total.innerText = d.data.length;
-  }
-}
 </script>
 
 </body>
