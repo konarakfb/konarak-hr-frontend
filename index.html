@@ -142,7 +142,6 @@
       border-radius:4px;
       font-size:12px;
     }
-
     /* SECTION TITLE */
     .section-title{
       margin:16px 0 6px;
@@ -262,7 +261,7 @@
       .meta-row{grid-template-columns:1fr;}
     }
 
-    /* EXTRA PADDING ONLY FOR PDF (does NOT change website) */
+    /* EXTRA PADDING ONLY FOR PDF (old behaviour) */
     .pdf-padding input,
     .pdf-padding textarea,
     .pdf-padding select {
@@ -347,6 +346,20 @@
       justify-content:center;
       margin-top:8px;
     }
+    /* FIX: Increase input height ONLY during PDF generation (no change in website UI) */
+    .pdf-padding input,
+    .pdf-padding select {
+      height: 32px !important;
+      padding: 8px 10px !important;
+      line-height: 16px !important;
+    }
+
+    .pdf-padding textarea {
+      padding: 10px 12px !important;
+      min-height: 80px !important;
+      line-height: 18px !important;
+    }
+
   </style>
 </head>
 
@@ -381,7 +394,6 @@
 
       <!-- META FIELDS -->
       <div class="meta-row">
-
         <div class="meta-item">
           <label for="food-item">Food Item Name</label>
           <input id="food-item" type="text" placeholder="Item name">
@@ -692,12 +704,12 @@
     alert("Form reset. All fields are editable again.");
   }
 
-  // SINGLE-PAGE PDF WITH MARGIN (unchanged behaviour, just centered)
+  // SINGLE-PAGE PDF WITH MARGIN
   function downloadPDF(){
     const { jsPDF } = window.jspdf;
     const pdfArea = document.getElementById("pdf-area");
 
-    // ADD EXTRA PADDING ONLY FOR PDF
+    // ADD PADDING FOR PDF
     pdfArea.classList.add("pdf-padding");
 
     html2canvas(pdfArea, {
@@ -732,20 +744,20 @@
 
       pdf.addImage(imgData, "JPEG", x, y, imgWidth, imgHeight, undefined, "FAST");
 
-      // REMOVE EXTRA PADDING AFTER PDF
+      // REMOVE PADDING
       pdfArea.classList.remove("pdf-padding");
 
       pdf.save("Food_Feedback_Form_KFB-001.pdf");
     });
   }
 
-  // --------- QR MODAL LOGIC (current page URL) ----------
+  // QR LOGIC
   function openQRModal(){
     const qrModal = document.getElementById("qr-modal");
     qrModal.style.display = "flex";
 
     const qrDiv = document.getElementById("qrcode");
-    qrDiv.innerHTML = ""; // clear old QR
+    qrDiv.innerHTML = "";
 
     const url = window.location.href;
 
@@ -760,7 +772,7 @@
     document.getElementById("qr-modal").style.display = "none";
   }
 
-  // --------- LOGIN MODAL OPEN/CLOSE ----------
+  // LOGIN
   function openLoginModal(){
     document.getElementById("login-status").textContent = "";
     document.getElementById("login-modal").style.display = "flex";
@@ -770,7 +782,6 @@
     document.getElementById("login-modal").style.display = "none";
   }
 
-  // --------- FIREBASE CONFIG + LOGIN ----------
   const firebaseConfig = {
     apiKey: "AIzaSyDrbNwfwumTWXhAs6ZZ_ulcb5mO0NKeKso",
     authDomain: "konarak-feedback.firebaseapp.com",
@@ -797,12 +808,10 @@
     }
 
     auth.signInWithEmailAndPassword(email, pass)
-      .then(userCred => {
+      .then(() => {
         statusEl.style.color = "green";
         statusEl.textContent = "Login successful.";
-        setTimeout(() => {
-          closeLoginModal();
-        }, 800);
+        setTimeout(closeLoginModal, 800);
       })
       .catch(err => {
         statusEl.textContent = err.message;
