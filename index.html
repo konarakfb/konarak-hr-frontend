@@ -262,18 +262,20 @@
       .meta-row{grid-template-columns:1fr;}
     }
 
-    /* EXTRA PADDING ONLY FOR PDF: bigger boxes so text not cut (for clone) */
+    /* FIX: Bigger fields ONLY in PDF clone to prevent text cutting */
     .pdf-padding input,
     .pdf-padding select {
-      height: 32px !important;
-      padding: 8px 10px !important;
-      line-height: 16px !important;
+      height: 40px !important;
+      padding: 10px 14px !important;
+      font-size: 14px !important;
+      line-height: 20px !important;
     }
 
     .pdf-padding textarea {
-      padding: 10px 12px !important;
-      min-height: 80px !important;
-      line-height: 18px !important;
+      min-height: 100px !important;
+      padding: 14px !important;
+      font-size: 14px !important;
+      line-height: 20px !important;
     }
 
     /* TOP SMALL BUTTONS ROW (Login & QR) */
@@ -621,7 +623,7 @@
   <div class="actions">
     <button class="btn btn-primary" type="button" onclick="saveForm()">Save (Lock)</button>
     <button class="btn" type="button" onclick="resetForm()">Reset</button>
-    <!-- Admin-only buttons -->
+    <!-- admin-only buttons -->
     <button id="print-btn" class="btn admin-only" type="button" onclick="window.print()">Print</button>
     <button id="pdf-btn" class="btn btn-primary admin-only" type="button" onclick="downloadPDF()">Download PDF</button>
   </div>
@@ -703,19 +705,21 @@
     alert("Form reset. All fields are editable again.");
   }
 
-  // SINGLE-PAGE PDF WITH MARGIN, using CLONE + pdf-padding (to avoid text cutting)
+  // PDF (clone + padding, no cutting)
   function downloadPDF(){
     const { jsPDF } = window.jspdf;
     const pdfArea = document.getElementById("pdf-area");
 
-    // CLONE with extra padding classes applied ONLY for PDF
+    // CLONE with extra padding applied ONLY for PDF
     const clone = pdfArea.cloneNode(true);
     clone.classList.add("pdf-padding");
     clone.style.backgroundColor = "#ffffff";
     clone.style.boxSizing = "border-box";
+    clone.style.transform = "scale(1)";
+    clone.style.transformOrigin = "top left";
     clone.style.width = pdfArea.offsetWidth + "px";
+    clone.style.minHeight = pdfArea.offsetHeight + "px";
 
-    // Hidden container
     const hidden = document.createElement("div");
     hidden.style.position = "fixed";
     hidden.style.left = "-9999px";
@@ -731,12 +735,10 @@
     }).then(canvas => {
 
       const pdf = new jsPDF("p","mm","a4");
-
       const pageWidth  = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
 
       const margin = 10;
-
       const maxWidth  = pageWidth  - margin * 2;
       const maxHeight = pageHeight - margin * 2;
 
@@ -755,7 +757,6 @@
 
       pdf.addImage(imgData, "PNG", x, y, imgWidth, imgHeight, undefined, "FAST");
 
-      // Remove hidden clone
       document.body.removeChild(hidden);
 
       pdf.save("Food_Feedback_Form_KFB-001.pdf");
@@ -806,7 +807,6 @@
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
 
-  // LOGIN HANDLER
   function submitLogin(){
     const email = document.getElementById("login-email").value.trim();
     const pass  = document.getElementById("login-password").value;
@@ -831,7 +831,6 @@
       });
   }
 
-  // LOGOUT
   function adminLogout(){
     auth.signOut()
       .then(() => {
@@ -842,7 +841,7 @@
       });
   }
 
-  // AUTH STATE → CONTROL ADMIN UI
+  // AUTH STATE → Control admin-only buttons & login text
   auth.onAuthStateChanged(user => {
     const body = document.body;
     const loginBtn = document.getElementById("login-btn");
