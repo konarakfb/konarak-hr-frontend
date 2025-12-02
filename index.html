@@ -142,6 +142,7 @@
       border-radius:4px;
       font-size:12px;
     }
+
     /* SECTION TITLE */
     .section-title{
       margin:16px 0 6px;
@@ -261,11 +262,18 @@
       .meta-row{grid-template-columns:1fr;}
     }
 
-    /* EXTRA PADDING ONLY FOR PDF (old behaviour) */
+    /* EXTRA PADDING ONLY FOR PDF: bigger boxes so text not cut (for clone) */
     .pdf-padding input,
-    .pdf-padding textarea,
     .pdf-padding select {
-      padding:10px !important;
+      height: 32px !important;
+      padding: 8px 10px !important;
+      line-height: 16px !important;
+    }
+
+    .pdf-padding textarea {
+      padding: 10px 12px !important;
+      min-height: 80px !important;
+      line-height: 18px !important;
     }
 
     /* TOP SMALL BUTTONS ROW (Login & QR) */
@@ -346,20 +354,10 @@
       justify-content:center;
       margin-top:8px;
     }
-    /* FIX: Increase input height ONLY during PDF generation (no change in website UI) */
-    .pdf-padding input,
-    .pdf-padding select {
-      height: 32px !important;
-      padding: 8px 10px !important;
-      line-height: 16px !important;
-    }
 
-    .pdf-padding textarea {
-      padding: 10px 12px !important;
-      min-height: 80px !important;
-      line-height: 18px !important;
-    }
-
+    /* ADMIN VISIBILITY CONTROL */
+    .admin-only{ display:none; }
+    body.is-admin .admin-only{ display:inline-block; }
   </style>
 </head>
 
@@ -368,8 +366,8 @@
 
   <!-- TOP CONTROLS: LOGIN & QR BUTTONS -->
   <div class="top-controls">
-    <button class="btn btn-small" type="button" onclick="openLoginModal()">Login</button>
-    <button class="btn btn-small" type="button" onclick="openQRModal()">QR</button>
+    <button id="login-btn" class="btn btn-small" type="button" onclick="openLoginModal()">Login</button>
+    <button id="qr-btn" class="btn btn-small admin-only" type="button" onclick="openQRModal()">QR</button>
   </div>
 
   <div class="top-bar">
@@ -623,8 +621,9 @@
   <div class="actions">
     <button class="btn btn-primary" type="button" onclick="saveForm()">Save (Lock)</button>
     <button class="btn" type="button" onclick="resetForm()">Reset</button>
-    <button class="btn" type="button" onclick="window.print()">Print</button>
-    <button class="btn btn-primary" type="button" onclick="downloadPDF()">Download PDF</button>
+    <!-- Admin-only buttons -->
+    <button id="print-btn" class="btn admin-only" type="button" onclick="window.print()">Print</button>
+    <button id="pdf-btn" class="btn btn-primary admin-only" type="button" onclick="downloadPDF()">Download PDF</button>
   </div>
 
 </div>
@@ -681,7 +680,7 @@
     controls.forEach(el => {
       el.setAttribute("disabled","disabled");
     });
-    alert("Form saved and locked. You can still print or download PDF.");
+    alert("Form saved and locked. You can still print or download PDF (if admin).");
   }
 
   // RESET: clear & unlock
@@ -704,15 +703,27 @@
     alert("Form reset. All fields are editable again.");
   }
 
-  // SINGLE-PAGE PDF WITH MARGIN
+  // SINGLE-PAGE PDF WITH MARGIN, using CLONE + pdf-padding (to avoid text cutting)
   function downloadPDF(){
     const { jsPDF } = window.jspdf;
     const pdfArea = document.getElementById("pdf-area");
 
-    // ADD PADDING FOR PDF
-    pdfArea.classList.add("pdf-padding");
+    // CLONE with extra padding classes applied ONLY for PDF
+    const clone = pdfArea.cloneNode(true);
+    clone.classList.add("pdf-padding");
+    clone.style.backgroundColor = "#ffffff";
+    clone.style.boxSizing = "border-box";
+    clone.style.width = pdfArea.offsetWidth + "px";
 
-    html2canvas(pdfArea, {
+    // Hidden container
+    const hidden = document.createElement("div");
+    hidden.style.position = "fixed";
+    hidden.style.left = "-9999px";
+    hidden.style.top = "0";
+    hidden.appendChild(clone);
+    document.body.appendChild(hidden);
+
+    html2canvas(clone, {
       scale: 3,
       useCORS: true,
       scrollY: -window.scrollY,
@@ -740,12 +751,12 @@
       const x = (pageWidth  - imgWidth)  / 2;
       const y = (pageHeight - imgHeight) / 2;
 
-      const imgData = canvas.toDataURL("image/jpeg", 0.95);
+      const imgData = canvas.toDataURL("image/png", 1.0);
 
-      pdf.addImage(imgData, "JPEG", x, y, imgWidth, imgHeight, undefined, "FAST");
+      pdf.addImage(imgData, "PNG", x, y, imgWidth, imgHeight, undefined, "FAST");
 
-      // REMOVE PADDING
-      pdfArea.classList.remove("pdf-padding");
+      // Remove hidden clone
+      document.body.removeChild(hidden);
 
       pdf.save("Food_Feedback_Form_KFB-001.pdf");
     });
@@ -772,7 +783,7 @@
     document.getElementById("qr-modal").style.display = "none";
   }
 
-  // LOGIN
+  // LOGIN MODAL
   function openLoginModal(){
     document.getElementById("login-status").textContent = "";
     document.getElementById("login-modal").style.display = "flex";
@@ -782,6 +793,7 @@
     document.getElementById("login-modal").style.display = "none";
   }
 
+  // FIREBASE CONFIG
   const firebaseConfig = {
     apiKey: "AIzaSyDrbNwfwumTWXhAs6ZZ_ulcb5mO0NKeKso",
     authDomain: "konarak-feedback.firebaseapp.com",
@@ -794,6 +806,7 @@
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
 
+  // LOGIN HANDLER
   function submitLogin(){
     const email = document.getElementById("login-email").value.trim();
     const pass  = document.getElementById("login-password").value;
@@ -817,6 +830,39 @@
         statusEl.textContent = err.message;
       });
   }
+
+  // LOGOUT
+  function adminLogout(){
+    auth.signOut()
+      .then(() => {
+        alert("Logged out");
+      })
+      .catch(err => {
+        alert("Logout error: " + err.message);
+      });
+  }
+
+  // AUTH STATE → CONTROL ADMIN UI
+  auth.onAuthStateChanged(user => {
+    const body = document.body;
+    const loginBtn = document.getElementById("login-btn");
+
+    if(user){
+      // ADMIN MODE
+      body.classList.add("is-admin");
+      if(loginBtn){
+        loginBtn.textContent = "Logout";
+        loginBtn.onclick = adminLogout;
+      }
+    }else{
+      // PUBLIC MODE
+      body.classList.remove("is-admin");
+      if(loginBtn){
+        loginBtn.textContent = "Login";
+        loginBtn.onclick = openLoginModal;
+      }
+    }
+  });
 </script>
 
 </body>
